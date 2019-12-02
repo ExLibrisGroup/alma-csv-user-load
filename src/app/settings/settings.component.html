@@ -1,0 +1,73 @@
+<h1>Settings</h1>
+
+<form [formGroup]="form">
+
+  <h2>General</h2>
+  <mat-form-field floatLabel="never">
+    <mat-label>User type</mat-label>
+    <mat-select formControlName="userType" placeholder="User Type">
+      <mat-option value="INTERNAL">Internal</mat-option>
+      <mat-option value="EXTERNAL">External</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <h2>Field Mapping</h2>
+  <mat-table #table [dataSource]="dataSource">
+    <!-- Header Column -->
+    <ng-container matColumnDef="header">
+      <mat-header-cell *matHeaderCellDef> Header </mat-header-cell>
+      <mat-cell *matCellDef="let field" [formGroup]="field">
+        <input type="text" matInput formControlName="header"/>
+      </mat-cell>
+    </ng-container>  
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="name">
+      <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+      <mat-cell *matCellDef="let field" [formGroup]="field">
+        <mat-form-field floatLabel="never">
+          <mat-select formControlName="fieldName" placeholder="Field Name">
+            <mat-option value="first_name">First Name</mat-option>
+            <mat-option value="last_name">Last Name</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </mat-cell>
+    </ng-container>  
+
+    <!-- Actions Column -->
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef>  </mat-header-cell>
+      <mat-cell  *matCellDef="let field;  let j = index;">
+        <button type="button" (click)="removeField(j)" mat-icon-button aria-label="Delete field">
+          <mat-icon>delete_outline</mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>  
+  </mat-table>
+  <button type="button" (click)="addField()" mat-icon-button aria-label="Add field">
+    <mat-icon>add_circle</mat-icon>
+  </button>
+</form>
+
+<p>
+  <button mat-stroked-button type="button" (click)="reset()" [disabled]="!form.dirty">Reset</button> 
+  <button mat-stroken-button type="button" color="primary" (click)="save()" [disabled]="!form.dirty">Save</button>
+  {{ status }}
+</p>
+
+<p>&nbsp;</p>
+<mat-accordion>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Form value
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <code>
+      {{form.value | json}}
+    </code>
+  </mat-expansion-panel>
+</mat-accordion>
