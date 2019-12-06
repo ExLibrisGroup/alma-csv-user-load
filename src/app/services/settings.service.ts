@@ -11,21 +11,20 @@ import { environment } from 'src/environments/environment';
 })
 export class SettingsService {
 
-  private _settings: string;
-  private cache$: Observable<Object>;
+  private settings$: Observable<any>;
 
   constructor( private http: HttpClient ) { }
 
-  get settings() {
-    if (!this.cache$) 
-      this.cache$ = this.requestSettings().pipe(shareReplay());
+  get settings(): Observable<any> {
+    if (!this.settings$) 
+      this.settings$ = this.retrieveSettings().pipe(shareReplay());
 
-    return this.cache$;
+    return this.settings$;
   }
 
-  requestSettings() {
-    const url = environment.settingsService + `?user_id=joshw&app_id=exlcodeshare/test`;
-    return this.http.get(url);
+  retrieveSettings() {
+    const url = environment.settingsService + `?user_id=${environment.userId}&app_id=${environment.appId}`;
+    return this.http.get<any>(url);
   }
 
   getAsFormGroup(): Observable<any> {
@@ -33,7 +32,7 @@ export class SettingsService {
   }
 
   set(settings: Object): Observable<any> {
-    this.cache$ = null;
+    this.settings$ = null;
     const url = environment.settingsService;
     return this.http.post(url, { userId: environment.userId, appId: environment.appId, settings: settings});
   }
@@ -44,7 +43,7 @@ const asFormGroup = (object: Object): AbstractControl => {
   if (Array.isArray(object)) {
     return new FormArray(object.map(entry=>asFormGroup(entry)));
   } else if (typeof object === 'object') {
-    return new FormGroup(Utils.objectMap(object, asFormGroup));
+    return new FormGroup(Utils.mapObject(object, asFormGroup));
   } else {
     return new FormControl(object);
   }

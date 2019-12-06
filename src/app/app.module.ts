@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http'; 
+import { NgxDropzoneModule } from 'ngx-dropzone';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -37,6 +38,7 @@ import {
       HttpClientModule,
       ReactiveFormsModule,
       BrowserAnimationsModule,
+      NgxDropzoneModule,
       MatFormFieldModule,
       MatInputModule,
       MatButtonModule,

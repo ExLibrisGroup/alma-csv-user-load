@@ -21,7 +21,10 @@
     "@angular/platform-browser": "~8.2.9",
     "@angular/platform-browser-dynamic": "~8.2.9",
     "@angular/router": "~8.2.9",
+    "dot-object": "^2.1.2",
     "hammerjs": "^2.0.8",
+    "ngx-dropzone": "^2.2.1",
+    "ngx-papaparse": "^4.0.4",
     "rxjs": "~6.4.0",
     "tslib": "^1.10.0",
     "zone.js": "~0.9.1"

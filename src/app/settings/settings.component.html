@@ -3,13 +3,6 @@
 <form [formGroup]="form">
 
   <h2>General</h2>
-  <mat-form-field floatLabel="never">
-    <mat-label>User type</mat-label>
-    <mat-select formControlName="userType" placeholder="User Type">
-      <mat-option value="INTERNAL">Internal</mat-option>
-      <mat-option value="EXTERNAL">External</mat-option>
-    </mat-select>
-  </mat-form-field>
 
   <h2>Field Mapping</h2>
   <mat-table #table [dataSource]="dataSource">
@@ -21,6 +14,14 @@
       </mat-cell>
     </ng-container>  
 
+    <!-- Default Column -->
+    <ng-container matColumnDef="default">
+        <mat-header-cell *matHeaderCellDef> Default </mat-header-cell>
+        <mat-cell *matCellDef="let field" [formGroup]="field">
+          <input type="text" matInput formControlName="default"/>
+        </mat-cell>
+      </ng-container>  
+
     <!-- Name Column -->
     <ng-container matColumnDef="name">
       <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
@@ -29,6 +30,11 @@
           <mat-select formControlName="fieldName" placeholder="Field Name">
             <mat-option value="first_name">First Name</mat-option>
             <mat-option value="last_name">Last Name</mat-option>
+            <mat-option value="contact_info.address[].line1">Address Line 1</mat-option>
+            <mat-option value="contact_info.address[].city">City</mat-option>
+            <mat-option value="contact_info.address[].address_type[].value">Address Type (home, work)</mat-option>
+            <mat-option value="contact_info.email[].email_address">Email address</mat-option>
+            <mat-option value="account_type.value">Account Type (INTERNAL, EXTERNAL)</mat-option>
           </mat-select>
         </mat-form-field>
       </mat-cell>
@@ -50,6 +56,23 @@
   <button type="button" (click)="addField()" mat-icon-button aria-label="Add field">
     <mat-icon>add_circle</mat-icon>
   </button>
+
+  <div *ngIf="fields.invalid " class="alert alert-danger">
+    <ul>
+      <li *ngFor="let error of fields.errors">
+        {{error}}
+      </li>
+    </ul>
+  </div>  
+
+  <div *ngIf="form.invalid && submitted" class="alert alert-danger">
+      <ul>
+        <li *ngFor="let error of formErrors">
+          {{error}}
+        </li>
+      </ul>
+    </div>  
+
 </form>
 
 <p>

@@ -6,7 +6,9 @@ export const environment = {
   production: false,
   settingsService: "http://localhost:3001/settings",
   userId: "joshw",
-  appId: "exlcodeshare/test"
+  appId: "exlcodeshare/test",
+  proxyUrl: "http://localhost:5051"
+
 };
 
 /*

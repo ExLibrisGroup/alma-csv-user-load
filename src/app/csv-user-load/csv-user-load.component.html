@@ -1,3 +1,19 @@
+<h1>Load Users from CSV</h1>
+
+<ngx-dropzone (change)="onSelect($event)" accept=".csv" [multiple]=false>
+  <ngx-dropzone-label>Drag a CSV file or click to browse</ngx-dropzone-label>
+  <ngx-dropzone-preview *ngFor="let f of files" [removable]="true" (removed)="onRemove(f)">
+    <ngx-dropzone-label>{{ f.name }}</ngx-dropzone-label>
+  </ngx-dropzone-preview>
+</ngx-dropzone>
+
 <p>
-  csv-user-load works!
+  <button mat-stroked-button type="button" (click)="reset()" [disabled]="!!results">Reset</button> 
+  <button mat-stroken-button type="button" color="primary" (click)="load()" [disabled]="files.length==0 && !results">Load users</button>
 </p>
+
+<div *ngIf="results">
+  <h2>Results</h2>
+  <pre #resultsPanel>{{results}}</pre>
+  <button mat-stroked-button type="button" (click)="reset()" *ngIf="results.indexOf('Finished')>=0">OK</button> 
+</div>

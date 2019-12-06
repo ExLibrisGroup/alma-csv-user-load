@@ -1,0 +1,10 @@
+pre {
+  font-family: monospace;
+  background: lightgrey;
+  padding: 10px;
+  border: thin, dashed, black;
+}
+
+button {
+  margin-right: 10px;
+}
