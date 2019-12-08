@@ -70,10 +70,12 @@ export class CsvUserLoadComponent implements OnInit {
     if(confirm(`Are you sure you want to create ${users.length} users in Alma?`)) {
       /* Chunk into 10 updates at at time */
       await Utils.asyncForEach(Utils.chunk(users, 10), async (batch) => {
-        await Promise.all(batch.map(user => this.usersService.createUser(user).toPromise()))
-          .then(data=> { 
-            console.log('Created ' + data.map(u=>u.primary_id).join(', '));
-            data.forEach(u=>this.log('Created ' + u.primary_id));
+        await Promise.all(batch.map(user => this.usersService.createUser(user).toPromise()).map(Utils.reflect))
+          .then(results => { 
+            results.forEach(res=>this.log(res.status=='fulfilled' ?
+              'Created: ' + res.v.primary_id :
+              'Failed: ' + res.e.error.errorList.error[0].errorMessage)
+              );
           });        
       });
       this.log('Finished');

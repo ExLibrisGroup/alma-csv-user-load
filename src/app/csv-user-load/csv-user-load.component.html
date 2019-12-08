@@ -7,10 +7,11 @@
   </ngx-dropzone-preview>
 </ngx-dropzone>
 
-<p>
+<div class="buttons">
   <button mat-stroked-button type="button" (click)="reset()" [disabled]="!!results">Reset</button> 
-  <button mat-stroken-button type="button" color="primary" (click)="load()" [disabled]="files.length==0 && !results">Load users</button>
-</p>
+  <button mat-stroken-button type="button" color="primary" (click)="load()" [disabled]="files.length==0 || !!results">Load users</button>
+  <mat-spinner diameter="30" class="spinner" *ngIf="results && results.indexOf('Finished')<0"></mat-spinner>
+</div>
 
 <div *ngIf="results">
   <h2>Results</h2>

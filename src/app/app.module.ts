@@ -21,7 +21,8 @@ import {
    MatTableModule,
    MatSelectModule,
    MatExpansionModule,
-   MatIconModule
+   MatIconModule,
+   MatProgressSpinnerModule
 } from '@angular/material'
 
 @NgModule({
@@ -45,7 +46,8 @@ import {
       MatTableModule,
       MatSelectModule,
       MatExpansionModule,
-      MatIconModule
+      MatIconModule,
+      MatProgressSpinnerModule
    ],
    providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}],
    bootstrap: [

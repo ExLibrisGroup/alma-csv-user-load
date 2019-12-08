@@ -100,10 +100,10 @@ const validateFields = (fields: FormArray): string[] | null => {
 const validateForm = (form: FormGroup) : string[] | null => {
   let errorArray = [];
   let fields = form.get('fields');
-  /* All fields must have a field Name selected and either a default or a header */
-  if (fields.value.filter(f=>!f['fieldName']).length>0 || 
-    fields.value.filter(f=>!f['header'] && !f['default']).length>0)
-    errorArray.push('Each field must have a field name and either a default or a header value.');
+
+  /* All fields must have either a default or a header */
+  if ( fields.value.filter(f=>!f['header'] && !f['default']).length>0)
+    errorArray.push('Each field must have either a default or a header value.');
 
   return errorArray.length>0 ? errorArray : null;
 }
