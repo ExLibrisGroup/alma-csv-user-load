@@ -1,12 +1,8 @@
-mat-header-cell {
-  padding: 15px;
+.commands-container {
+  margin-top: 10px;
 }
 
-.mat-column-actions {
-  flex: 0 0 50px;
-}
-
-button {
+.commands-container button {
   margin-right: 10px;
 }
 
@@ -16,4 +12,13 @@ button {
 
 .alert {
   padding: 10px, 0;
+}
+
+.profile-list {
+  display: flex;
+  align-items: center;
+}
+
+.profile-list.pull-right {
+  margin-left: auto;
 }

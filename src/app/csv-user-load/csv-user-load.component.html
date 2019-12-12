@@ -1,5 +1,15 @@
 <h1>Load Users from CSV</h1>
 
+<mat-form-field>
+  <mat-label>Select a profile</mat-label>
+  <mat-select placeholder="Profile" [(value)]="selectedProfile" [compareWith]="compareProfiles" (selectionChange)="onProfileSelected($event)">
+    <mat-select-trigger>{{selectedProfile?.name}}</mat-select-trigger>
+    <mat-option *ngFor="let profile of settings?.profiles" [value]="profile">
+      {{profile.name}}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
 <ngx-dropzone (change)="onSelect($event)" accept=".csv" [multiple]=false>
   <ngx-dropzone-label>Drag a CSV file or click to browse</ngx-dropzone-label>
   <ngx-dropzone-preview *ngFor="let f of files" [removable]="true" (removed)="onRemove(f)">
@@ -9,7 +19,7 @@
 
 <div class="buttons">
   <button mat-stroked-button type="button" (click)="reset()" [disabled]="!!results">Reset</button> 
-  <button mat-stroken-button type="button" color="primary" (click)="load()" [disabled]="files.length==0 || !!results">Load users</button>
+  <button mat-stroken-button type="button" color="primary" (click)="load()" [disabled]="files.length==0 || !!results || !selectedProfile">Load users</button>
   <mat-spinner diameter="30" class="spinner" *ngIf="results && results.indexOf('Finished')<0"></mat-spinner>
 </div>
 

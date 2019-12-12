@@ -1,8 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormArray, FormGroup, ValidatorFn, AbstractControl } from '@angular/forms';
-import { MatTableDataSource, MatTable } from '@angular/material';
+import { MatSelectChange } from '@angular/material';
 import { SettingsService } from '../services/settings.service';
-import { Utils } from 'src/utilities';
+import { Utils } from '../utilities';
+import { ProfileComponent } from './profile/profile.component';
 
 @Component({
   selector: 'app-settings',
@@ -10,29 +11,38 @@ import { Utils } from 'src/utilities';
   styleUrls: ['./settings.component.css']
 })
 export class SettingsComponent implements OnInit {
-  displayedColumns = ['header', 'default', 'name', 'actions'];
-  dataSource: MatTableDataSource<any>;
   form: FormGroup;
   status: string;
   submitted = false;
-  @ViewChild('table', null) table: MatTable<any>;
+  selectedProfile: FormGroup;
+  @ViewChild(ProfileComponent, null) profileForm: ProfileComponent;
 
   constructor(private fb: FormBuilder, private settingsService: SettingsService) { }
 
   ngOnInit() {
     this.initForm();
+    this.setProfile();
     this.load();
   }
 
   initForm() {
     this.form = this.fb.group({
+      profiles: this.fb.array([
+        this.newProfile('Default')
+      ])
+    })
+  }
+
+  newProfile(name: string): FormGroup {
+    return this.fb.group({
+      name: name,
       fields: this.fb.array([
         this.fb.group({
           header: '',
           default: 'INTERNAL',
           fieldName: 'account_type.value'
         })
-      ])
+      ])  
     })
   }
 
@@ -40,24 +50,12 @@ export class SettingsComponent implements OnInit {
     this.settingsService.getAsFormGroup().subscribe((settings: FormGroup) => {
       if (!Utils.isEmptyObject(settings.value)) this.form = settings;
       else this.initForm();
-      
-      this.dataSource = new MatTableDataSource(this.fields.controls);
-      this.fields.setValidators(validateFields);
+
+      this.setProfile();
+      this.profiles.controls.forEach( f => f.get('fields').setValidators(validateFields));
       this.form.setValidators(validateForm);
       this.form.updateValueAndValidity();
     });
-  }
-
-  addField() {
-    this.fields.push(this.fb.group({header: '', fieldName: '', default: ''}));
-    this.fields.markAsDirty();
-    this.table.renderRows();
-  }
-
-  removeField(index: number) {
-    this.fields.removeAt(index);
-    this.fields.markAsDirty();
-    this.table.renderRows();
   }
 
   async save() {
@@ -74,7 +72,45 @@ export class SettingsComponent implements OnInit {
     this.load();
   }
 
-  get fields() { return (this.form.get('fields') as FormArray) }
+  onProfileSelected(event: MatSelectChange) {
+    this.profileForm.form = event.source.value;
+  }  
+
+  setProfile(index = 0) {
+    this.selectedProfile = this.profiles.at(index) as FormGroup;
+    this.profileForm.form = this.selectedProfile;
+  }
+
+  addProfile() {
+    let name = prompt('Profile name');
+    this.profiles.push(this.newProfile(name));
+    this.setProfile(this.profiles.length-1);
+    this.form.markAsDirty();
+  }
+
+  deleteProfile() {
+    if (confirm('Are you sure you want to delete this profile?')) {
+      this.profiles.removeAt(this.profiles.controls.findIndex( p => this.compareProfiles(p, this.selectedProfile)))
+      this.setProfile();
+      this.form.markAsDirty();
+    }
+  }
+
+  renameProfile() {
+    console.log('rename');
+    let name = prompt('Rename profile', this.selectedProfile.value.name);
+    if (name != null) {
+      this.selectedProfile.patchValue({name: name});
+      this.form.markAsDirty();
+    }
+      
+  }
+
+  compareProfiles(o1: AbstractControl, o2: AbstractControl): boolean {
+    return o1 && o2 ? o1.get('name').value === o2.get('name').value : o1 === o2;
+  }
+
+  get profiles(): FormArray { return (this.form.get('profiles') as FormArray) }
   get formErrors() { return Object.values(this.form.errors) }
 
   // https://stackblitz.com/edit/angular-material-table-with-form-59imvq
@@ -99,11 +135,14 @@ const validateFields = (fields: FormArray): string[] | null => {
 /** Validate entire form */
 const validateForm = (form: FormGroup) : string[] | null => {
   let errorArray = [];
-  let fields = form.get('fields');
+  let profiles = form.get('profiles') as FormArray;
 
   /* All fields must have either a default or a header */
-  if ( fields.value.filter(f=>!f['header'] && !f['default']).length>0)
-    errorArray.push('Each field must have either a default or a header value.');
+  profiles.controls.forEach( p => {
+    let fields = p.get('fields');
+    if ( fields.value.filter(f=>!f['header'] && !f['default']).length>0)
+      errorArray.push(`Each field in profile '${p.get('name').value}' must have either a default or a header value.`);
+  })
 
   return errorArray.length>0 ? errorArray : null;
 }

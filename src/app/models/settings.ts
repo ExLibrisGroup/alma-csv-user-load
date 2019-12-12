@@ -1,6 +1,10 @@
 export interface Settings {
-  userType: string,
-  fields: Field[];
+  profiles: Profile[]
+}
+
+export interface Profile {
+  name: string,
+  fields: Field[];  
 }
 
 export interface Field {

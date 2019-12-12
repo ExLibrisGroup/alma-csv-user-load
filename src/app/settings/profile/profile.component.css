@@ -1,0 +1,11 @@
+mat-header-cell {
+  padding: 15px;
+}
+
+.mat-column-actions {
+  flex: 0 0 50px;
+}
+
+.alert-danger {
+  color: red;
+}

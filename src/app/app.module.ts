@@ -10,9 +10,8 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TopMenuComponent } from './top-menu/top-menu.component';
 import { CsvUserLoadComponent } from './csv-user-load/csv-user-load.component';
+import { ProfileComponent } from './settings/profile/profile.component'
 import { SettingsComponent } from './settings/settings.component';
-import { SettingsTestComponent } from './settings-test/settings-test.component';
-
 
 import {
    MatInputModule, 
@@ -31,7 +30,7 @@ import {
       TopMenuComponent,
       CsvUserLoadComponent,
       SettingsComponent,
-      SettingsTestComponent
+      ProfileComponent
    ],
    imports: [
       BrowserModule,

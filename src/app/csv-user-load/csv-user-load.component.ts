@@ -2,9 +2,11 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { SettingsService } from '../services/settings.service';
 import { Papa, ParseResult } from 'ngx-papaparse';
 import * as dot from 'dot-object';
-import { Utils } from 'src/utilities';
+import { Utils } from '../utilities';
 import { UsersService } from '../services/users.service';
-import { Settings } from '../models/settings';
+import { Settings, Profile } from '../models/settings';
+import { MatSelectChange } from '@angular/material';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-csv-user-load',
@@ -14,6 +16,7 @@ import { Settings } from '../models/settings';
 export class CsvUserLoadComponent implements OnInit {
   files: File[] = [];
   settings: Settings;
+  selectedProfile: Profile;
   results: String = '';
   @ViewChild('resultsPanel', {static: false}) private resultsPanel: ElementRef;
 
@@ -24,7 +27,10 @@ export class CsvUserLoadComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.settingsService.settings.subscribe(settings=>this.settings=settings as Settings);
+    this.settingsService.settings.subscribe(settings => {
+      this.settings=settings as Settings;
+      this.selectedProfile = this.settings.profiles[0];
+    });
   }
 
   onSelect(event) {
@@ -39,6 +45,14 @@ export class CsvUserLoadComponent implements OnInit {
     this.files = [];
     this.results = '';
   }
+
+  onProfileSelected(event: MatSelectChange) {
+    this.selectedProfile = event.source.value;
+  }  
+
+  compareProfiles(o1: Profile, o2: Profile): boolean {
+    return o1 && o2 ? o1.name === o2.name : o1 === o2;
+  }  
 
   load() {
     this.log('Parsing CSV file');
@@ -64,19 +78,19 @@ export class CsvUserLoadComponent implements OnInit {
     if (result.errors.length>0) 
       console.warn('Errors:', result.errors);
 
-    let users = result.data.map(row => this.mapUser(row));
-    users = users.map(r=>dot.object(r));
+    let users = result.data.map(row => dot.object(this.mapUser(row)));
     console.log('users', users);
     if(confirm(`Are you sure you want to create ${users.length} users in Alma?`)) {
       /* Chunk into 10 updates at at time */
       await Utils.asyncForEach(Utils.chunk(users, 10), async (batch) => {
-        await Promise.all(batch.map(user => this.usersService.createUser(user).toPromise()).map(Utils.reflect))
-          .then(results => { 
-            results.forEach(res=>this.log(res.status=='fulfilled' ?
-              'Created: ' + res.v.primary_id :
-              'Failed: ' + res.e.error.errorList.error[0].errorMessage)
-              );
-          });        
+        await Promise.all(batch.map(user => this.usersService.createUser(user).toPromise())
+        .map(Utils.reflect)) /* Handle resolution or rejection */
+        .then(results => { 
+          results.forEach(res=>this.log(res.status=='fulfilled' ?
+            'Created: ' + res.v.primary_id :
+            'Failed: ' + res.e.error.errorList.error[0].errorMessage)
+            );
+        });        
       });
       this.log('Finished');
     } else {
@@ -88,7 +102,7 @@ export class CsvUserLoadComponent implements OnInit {
   private mapUser = (user) => {
     /* Map CSV to user fields */
     let obj = Object.entries(user).reduce((a, [k,v]) => {
-      let f = this.settings.fields.find(f=>f.header===k.replace(/\[\d\]/,''))
+      let f = this.selectedProfile.fields.find(f=>f.header===k.replace(/\[\d\]/,''))
       if ( f && f.fieldName ) {
         let fieldName = f.fieldName;
         if (fieldName.indexOf('[]')>0) { // array field
@@ -101,7 +115,7 @@ export class CsvUserLoadComponent implements OnInit {
       return a;
     }, {});  
     /* Default values */
-    this.settings.fields.filter(f=>f.default).forEach(f=>{
+    this.selectedProfile.fields.filter(f=>f.default).forEach(f=>{
       if (!obj[f.fieldName])
         obj[f.fieldName.replace(/\[\]/g,'[0]')] = f.default;
     })

@@ -2,68 +2,30 @@
 
 <form [formGroup]="form">
 
+  <!--
   <h2>General</h2>
+  -->
 
-  <h2>Field Mapping</h2>
-  <mat-table #table [dataSource]="dataSource">
-    <!-- Header Column -->
-    <ng-container matColumnDef="header">
-      <mat-header-cell *matHeaderCellDef> Header </mat-header-cell>
-      <mat-cell *matCellDef="let field" [formGroup]="field">
-        <input type="text" matInput formControlName="header"/>
-      </mat-cell>
-    </ng-container>  
+  <h2>Profiles</h2>
+  <div class="profile-list">
+    <mat-select placeholder="Profile" [(value)]="selectedProfile" [compareWith]="compareProfiles" (selectionChange)="onProfileSelected($event)">
+      <mat-select-trigger>{{selectedProfile.value.name}}</mat-select-trigger>
+      <mat-option *ngFor="let profile of profiles.controls" [value]="profile">
+        {{profile.value.name}}
+      </mat-option>
+    </mat-select>
+    <button type="button" class="pull-right" (click)="addProfile()" mat-icon-button aria-label="Add profile" title="Add profile">
+        <mat-icon>add_circle</mat-icon>
+    </button>
+    <button type="button" (click)="renameProfile()" mat-icon-button aria-label="Rename profile" title="Rename profile">
+        <mat-icon>edit</mat-icon>
+    </button>    
+    <button type="button" (click)="deleteProfile()" mat-icon-button aria-label="Delete profile" title="Delete profile">
+        <mat-icon>delete_outline</mat-icon>
+    </button>
+  </div>
 
-    <!-- Default Column -->
-    <ng-container matColumnDef="default">
-        <mat-header-cell *matHeaderCellDef> Default </mat-header-cell>
-        <mat-cell *matCellDef="let field" [formGroup]="field">
-          <input type="text" matInput formControlName="default"/>
-        </mat-cell>
-      </ng-container>  
-
-    <!-- Name Column -->
-    <ng-container matColumnDef="name">
-      <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
-      <mat-cell *matCellDef="let field" [formGroup]="field">
-        <mat-form-field floatLabel="never">
-          <mat-select formControlName="fieldName" placeholder="Field Name">
-            <mat-option value="first_name">First Name</mat-option>
-            <mat-option value="last_name">Last Name</mat-option>
-            <mat-option value="contact_info.address[].line1">Address Line 1</mat-option>
-            <mat-option value="contact_info.address[].city">City</mat-option>
-            <mat-option value="contact_info.address[].address_type[].value">Address Type (home, work)</mat-option>
-            <mat-option value="contact_info.email[].email_address">Email address</mat-option>
-            <mat-option value="account_type.value">Account Type (INTERNAL, EXTERNAL)</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </mat-cell>
-    </ng-container>  
-
-    <!-- Actions Column -->
-    <ng-container matColumnDef="actions">
-      <mat-header-cell *matHeaderCellDef>  </mat-header-cell>
-      <mat-cell  *matCellDef="let field;  let j = index;">
-        <button type="button" (click)="removeField(j)" mat-icon-button aria-label="Delete field">
-          <mat-icon>delete_outline</mat-icon>
-        </button>
-      </mat-cell>
-    </ng-container>
-
-    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>  
-  </mat-table>
-  <button type="button" (click)="addField()" mat-icon-button aria-label="Add field">
-    <mat-icon>add_circle</mat-icon>
-  </button>
-
-  <div *ngIf="fields.invalid " class="alert alert-danger">
-    <ul>
-      <li *ngFor="let error of fields.errors">
-        {{error}}
-      </li>
-    </ul>
-  </div>  
+  <app-settings-profile [form]="profiles.at(0)"></app-settings-profile>
 
   <div *ngIf="form.invalid && submitted" class="alert alert-danger">
       <ul>
@@ -75,11 +37,11 @@
 
 </form>
 
-<p>
+<div class="commands-container">
   <button mat-stroked-button type="button" (click)="reset()" [disabled]="!form.dirty">Reset</button> 
   <button mat-stroken-button type="button" color="primary" (click)="save()" [disabled]="!form.dirty">Save</button>
   {{ status }}
-</p>
+</div>
 
 <p>&nbsp;</p>
 <mat-accordion>
