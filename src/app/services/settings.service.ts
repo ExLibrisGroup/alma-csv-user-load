@@ -42,7 +42,7 @@ export class SettingsService {
 const asFormGroup = (object: Object): AbstractControl => {
   if (Array.isArray(object)) {
     return new FormArray(object.map(entry=>asFormGroup(entry)));
-  } else if (typeof object === 'object') {
+  } else if (typeof object === 'object' && object != null) {
     return new FormGroup(Utils.mapObject(object, asFormGroup));
   } else {
     return new FormControl(object);

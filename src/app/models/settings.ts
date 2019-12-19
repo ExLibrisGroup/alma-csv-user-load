@@ -4,6 +4,7 @@ export interface Settings {
 
 export interface Profile {
   name: string,
+  accountType: string,
   fields: Field[];  
 }
 

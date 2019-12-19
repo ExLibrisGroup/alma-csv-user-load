@@ -1,12 +1,13 @@
-import { Component, OnInit, ViewChild, Input } from '@angular/core';
-import { FormBuilder, FormArray, FormGroup } from '@angular/forms';
+import { Component, OnInit, ViewChild, Input, ChangeDetectionStrategy } from '@angular/core';
+import { FormBuilder, FormArray, FormGroup, FormControl } from '@angular/forms';
 import { MatTableDataSource, MatTable } from '@angular/material';
 
 
 @Component({
   selector: 'app-settings-profile',
   templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.css']
+  styleUrls: ['./profile.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProfileComponent implements OnInit {
   displayedColumns = ['header', 'default', 'name', 'actions'];
@@ -32,7 +33,6 @@ export class ProfileComponent implements OnInit {
     this.table.renderRows();
   }
 
-  get fields() { return (this.form.get('fields') as FormArray) }
-
-
+  get fields() { return this.form ? (this.form.get('fields') as FormArray) : new FormArray([])}
+  get accountType() { return this.form ? (this.form.get('accountType') as FormControl) : new FormControl('')}
 }

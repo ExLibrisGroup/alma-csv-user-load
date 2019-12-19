@@ -2,14 +2,10 @@
 
 <form [formGroup]="form">
 
-  <!--
-  <h2>General</h2>
-  -->
-
   <h2>Profiles</h2>
   <div class="profile-list">
-    <mat-select placeholder="Profile" [(value)]="selectedProfile" [compareWith]="compareProfiles" (selectionChange)="onProfileSelected($event)">
-      <mat-select-trigger>{{selectedProfile.value.name}}</mat-select-trigger>
+    <mat-select placeholder="Profile" [(value)]="selectedProfile" [compareWith]="compareProfiles">
+      <mat-select-trigger>{{selectedProfile?.value.name}}</mat-select-trigger>
       <mat-option *ngFor="let profile of profiles.controls" [value]="profile">
         {{profile.value.name}}
       </mat-option>
@@ -24,8 +20,10 @@
         <mat-icon>delete_outline</mat-icon>
     </button>
   </div>
+  
+  <hr/>
 
-  <app-settings-profile [form]="profiles.at(0)"></app-settings-profile>
+  <app-settings-profile [form]="selectedProfile"></app-settings-profile>
 
   <div *ngIf="form.invalid && submitted" class="alert alert-danger">
       <ul>

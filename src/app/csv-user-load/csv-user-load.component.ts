@@ -5,8 +5,8 @@ import * as dot from 'dot-object';
 import { Utils } from '../utilities';
 import { UsersService } from '../services/users.service';
 import { Settings, Profile } from '../models/settings';
-import { MatSelectChange } from '@angular/material';
-import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-csv-user-load',
@@ -23,14 +23,17 @@ export class CsvUserLoadComponent implements OnInit {
   constructor ( 
     private settingsService: SettingsService, 
     private usersService: UsersService, 
-    private papa: Papa 
+    private papa: Papa,
+    private router: Router
   ) { }
 
   ngOnInit() {
-    this.settingsService.settings.subscribe(settings => {
+    this.settingsService.settings.toPromise().then(settings => {
       this.settings=settings as Settings;
       this.selectedProfile = this.settings.profiles[0];
-    });
+    })
+    .catch(err => this.router.navigate(['/settings']));
+    this.router
   }
 
   onSelect(event) {
@@ -45,10 +48,6 @@ export class CsvUserLoadComponent implements OnInit {
     this.files = [];
     this.results = '';
   }
-
-  onProfileSelected(event: MatSelectChange) {
-    this.selectedProfile = event.source.value;
-  }  
 
   compareProfiles(o1: Profile, o2: Profile): boolean {
     return o1 && o2 ? o1.name === o2.name : o1 === o2;
@@ -88,7 +87,7 @@ export class CsvUserLoadComponent implements OnInit {
         .then(results => { 
           results.forEach(res=>this.log(res.status=='fulfilled' ?
             'Created: ' + res.v.primary_id :
-            'Failed: ' + res.e.error.errorList.error[0].errorMessage)
+            'Failed: ' + this.parseAlmaError(res.e))
             );
         });        
       });
@@ -98,12 +97,11 @@ export class CsvUserLoadComponent implements OnInit {
     }
   }
 
-
   private mapUser = (user) => {
     /* Map CSV to user fields */
     let obj = Object.entries(user).reduce((a, [k,v]) => {
       let f = this.selectedProfile.fields.find(f=>f.header===k.replace(/\[\d\]/,''))
-      if ( f && f.fieldName ) {
+      if ( f && f.fieldName && v ) {
         let fieldName = f.fieldName;
         if (fieldName.indexOf('[]')>0) { // array field
           let i=-1, matches = k.match(/(\[\d\])/); // array position included in file, i.e. Address[0]
@@ -119,7 +117,19 @@ export class CsvUserLoadComponent implements OnInit {
       if (!obj[f.fieldName])
         obj[f.fieldName.replace(/\[\]/g,'[0]')] = f.default;
     })
+    /* Account Type */
+    obj['account_type'] = { value: this.selectedProfile.accountType };
+
     return obj;
   }
 
+  private parseAlmaError(err: HttpErrorResponse) {
+    if (err.error.web_service_result) {
+      return err.error.web_service_result.errorList.error.errorMessage
+    } else if (err.error.errorList) {
+      return err.error.errorList.error[0].errorMessage
+    } else {
+      return err.message;
+    }
+  }
 }

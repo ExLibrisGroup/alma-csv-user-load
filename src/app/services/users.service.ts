@@ -9,7 +9,7 @@ export class UsersService {
 
   constructor( private httpClient: HttpClient ) { }
 
-  /** Create a new BIB record with the specified MARCXML */
+  /** Create a new User */
   createUser( user ) {
     return this.httpClient.post<any>(environment.proxyUrl + '/almaws/v1/users', user )
   }

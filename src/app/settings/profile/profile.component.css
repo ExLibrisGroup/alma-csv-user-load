@@ -1,3 +1,7 @@
+div.profile-container {
+  padding-top: 25px;
+}
+
 mat-header-cell {
   padding: 15px;
 }
@@ -8,4 +12,18 @@ mat-header-cell {
 
 .alert-danger {
   color: red;
+}
+
+mat-cell {
+  padding: 5px;
+}
+
+mat-cell.border-right {
+  border-right: 1px solid grey;
+}
+
+mat-cell:first-child,
+mat-footer-cell:first-child,
+mat-header-cell:first-child {
+    padding-left: 0px !important;
 }
