@@ -1,0 +1,21 @@
+pre {
+  font-family: monospace;
+  background: lightgrey;
+  padding: 10px;
+  border: thin dotted black;
+  margin: 10px 0;
+  white-space: pre-wrap;
+}
+
+button {
+  margin-right: 10px;
+}
+
+.buttons {
+  padding: 20px 0;
+  width: fit-content;
+}
+
+.spinner {
+  float: right;
+}

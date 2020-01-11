@@ -1,0 +1,37 @@
+{
+  "Reset": "Reiniciar",	
+  "Save": "Salvar",	
+	"Main": {
+		"SelectProfile": "Selecciona un perfil",
+		"DragCsv": "Arrastre un archivo CSV o haga clic para navegar",
+		"LoadUsers": "Cargar usuarios",
+		"ConfirmCreateUsers": "¿Seguro que quieres crear {{count}} usuarios en Alma?",
+		"Finished": "Terminado",
+		"Parsing": "Analizando el archivo CSV"
+	},
+	"Profile": {
+		"Internal": "Interno",
+		"External": "Externo",
+		"Header": "Encabezamiento",
+		"FieldMapping": "Mapeo de campo",
+		"Default": "Defecto",
+		"Name": "Nombre",
+		"UserType": "Tipo de usuario"
+	},
+	"Settings": {
+		"Title": "Configuraciones",
+		"Profiles": "Perfiles",
+		"Saving": "Ahorro",
+		"Saved": "Salvado",
+		"ProfileName": "Nombre de perfil",
+	  "ConfirmDeleteProfile": "¿Seguro que quieres eliminar este perfil?",
+		"ProfileExists": "El perfil \"{{name}}\" ya existe.",
+		"RenameProfile": "Renombrar perfil",  
+		"Validation": {
+			"AddressTypeRequired": "Tipo de dirección requerida",
+			"EmailTypeRequired": "Tipo de correo electrónico requerido",
+			"FieldNameRequired": "Cada campo en el perfil \"{{profile}}\" debe tener un nombre de campo.",
+			"HeaderRequired": "Cada campo en el perfil \"{{profile}}\" debe tener un valor predeterminado o de encabezado."
+		}
+	}
+}

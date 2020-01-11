@@ -1,0 +1,33 @@
+.commands-container {
+  margin-top: 10px;
+}
+
+.commands-container button {
+  margin-right: 10px;
+}
+
+.alert-danger {
+  color: red;
+}
+
+.alert {
+  padding: 10px, 0;
+}
+
+.profile-list {
+  display: flex;
+  align-items: center;
+}
+
+.profile-list.pull-right {
+  margin-left: auto;
+}
+
+div.title {
+  display: flex;
+  margin-top: 10px;
+}
+
+div.title a {
+  margin-left: auto;
+}

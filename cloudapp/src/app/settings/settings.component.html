@@ -1,0 +1,65 @@
+<div class="title">
+  <h1 translate>Settings.Title</h1>
+  <a [routerLink]="['']">
+    <button mat-raised-button>
+      <mat-icon>arrow_back</mat-icon>
+      Back
+    </button>
+    </a>
+</div>
+
+<form [formGroup]="form">
+
+  <h2 translate>Settings.Profiles</h2>
+  <div class="profile-list">
+    <mat-select placeholder="Profile" [(value)]="selectedProfile" [compareWith]="compareProfiles">
+      <mat-select-trigger>{{selectedProfile?.value.name}}</mat-select-trigger>
+      <mat-option *ngFor="let profile of profiles.controls" [value]="profile">
+        {{profile.value.name}}
+      </mat-option>
+    </mat-select>
+    <button type="button" class="pull-right" (click)="addProfile()" mat-icon-button aria-label="Add profile" title="Add profile">
+        <mat-icon>add_circle</mat-icon>
+    </button>
+    <button type="button" (click)="renameProfile()" mat-icon-button aria-label="Rename profile" title="Rename profile">
+        <mat-icon>edit</mat-icon>
+    </button>    
+    <button type="button" (click)="deleteProfile()" mat-icon-button aria-label="Delete profile" title="Delete profile">
+        <mat-icon>delete_outline</mat-icon>
+    </button>
+  </div>
+  
+  <hr/>
+
+  <app-settings-profile [form]="selectedProfile"></app-settings-profile>
+
+  <div *ngIf="form.invalid && submitted" class="alert alert-danger">
+      <ul>
+        <li *ngFor="let error of formErrors">
+          <span [translate]="error.code" [translateParams]="error.params"></span>
+        </li>
+      </ul>
+    </div>  
+
+</form>
+
+<div class="commands-container">
+  <button mat-stroked-button type="button" (click)="reset()" [disabled]="!form.dirty">{{ 'Reset' | translate }}</button> 
+  <button mat-stroked-button type="button" color="primary" (click)="save()" [disabled]="!form.dirty">{{ 'Save' | translate }}</button>
+  <span *ngIf="status" [translate]="'Settings.' + status"></span>
+</div>
+<!--
+<p>&nbsp;</p>
+<mat-accordion>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Form value
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <pre style="font-family: monospace; max-width: 400px; overflow: auto;">
+      {{form.value | json}}
+    </pre>
+  </mat-expansion-panel>
+</mat-accordion>
+-->

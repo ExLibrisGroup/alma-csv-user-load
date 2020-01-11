@@ -1,0 +1,37 @@
+{
+	"Reset": "Reset",	
+	"Save": "Save",
+	"Main": {
+		"SelectProfile": "Select a profile",
+		"DragCsv": "Drag a CSV file or click to browse",
+		"LoadUsers": "Load users",
+		"ConfirmCreateUsers": "Are you sure you want to create {{count}} users in Alma?",
+		"Finished": "Finished",
+		"Parsing": "Parsing CSV file"
+	},
+	"Profile": {
+		"Internal": "Internal",
+		"External": "External",
+		"Header": "Header",
+		"FieldMapping": "Field Mapping",
+		"Default": "Default",
+		"Name": "Name",		
+		"UserType": "User Type"
+	},
+	"Settings": {
+		"Title": "Settings",
+		"Profiles": "Profiles",
+		"Saving": "Saving...",
+		"Saved": "Saved",
+		"ProfileName": "Profile name",
+		"ConfirmDeleteProfile": "Are you sure you want to delete this profile?",
+		"ProfileExists": "Profile {{name}} already exists.",
+		"RenameProfile": "Rename profile",
+		"Validation": {
+			"AddressTypeRequired": "Address type required",
+			"EmailTypeRequired": "Email type required",
+			"FieldNameRequired": "Each field in profile \"{{profile}}\" must have a field name.",
+			"HeaderRequired": "Each field in profile \"{{profile}}\" must have either a default or a header value."
+		}		
+	}
+}

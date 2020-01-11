@@ -1,0 +1,21 @@
+{
+   "$schema": "./manifest.schema.json",
+   "id": "alma-csv-user-load",
+   "title": "Alma CSV User Load",
+   "subtitle": "Load users from comma-separated file",
+   "description": "With this app, you can create Alma users from a list in a comma separated file. It supports flexible configuration in multiple profiles.",
+   "icon": {
+      "type": "font",
+      "value": "fa fa-file-excel-o"
+   },
+   "pages": {
+      "settings": "/#/settings",
+      "help": "https://github.com/jweisman/alma-csv-user-load/wiki/Alma-CSV-User-Load-Manual"
+   },
+   "author": "Josh Weisman",
+   "contentSecurity": {
+      "sandbox": {
+         "modals": true
+      }
+   }
+}
