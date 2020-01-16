@@ -23,6 +23,7 @@
 		"Profiles": "Profiles",
 		"Saving": "Saving...",
 		"Saved": "Saved",
+		"Back": "Back",
 		"ProfileName": "Profile name",
 		"ConfirmDeleteProfile": "Are you sure you want to delete this profile?",
 		"ProfileExists": "Profile {{name}} already exists.",

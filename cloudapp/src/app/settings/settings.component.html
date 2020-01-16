@@ -3,7 +3,7 @@
   <a [routerLink]="['']">
     <button mat-raised-button>
       <mat-icon>arrow_back</mat-icon>
-      Back
+      {{'Settings.Back' | translate}}
     </button>
     </a>
 </div>
@@ -46,20 +46,5 @@
 <div class="commands-container">
   <button mat-stroked-button type="button" (click)="reset()" [disabled]="!form.dirty">{{ 'Reset' | translate }}</button> 
   <button mat-stroked-button type="button" color="primary" (click)="save()" [disabled]="!form.dirty">{{ 'Save' | translate }}</button>
-  <span *ngIf="status" [translate]="'Settings.' + status"></span>
+  <mat-spinner diameter="30" class="spinner" *ngIf="saving"></mat-spinner>
 </div>
-<!--
-<p>&nbsp;</p>
-<mat-accordion>
-  <mat-expansion-panel>
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        Form value
-      </mat-panel-title>
-    </mat-expansion-panel-header>
-    <pre style="font-family: monospace; max-width: 400px; overflow: auto;">
-      {{form.value | json}}
-    </pre>
-  </mat-expansion-panel>
-</mat-accordion>
--->

@@ -3,6 +3,7 @@ import { FormBuilder, FormArray, FormGroup, ValidatorFn, AbstractControl } from 
 import { Utils } from '../utilities';
 import { CloudAppSettingsService } from '@exlibris/exl-cloudapp-angular-lib';
 import { TranslateService } from '@ngx-translate/core';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-settings',
@@ -11,14 +12,15 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class SettingsComponent implements OnInit {
   form: FormGroup;
-  status: string;
+  saving = false;
   submitted = false;
   selectedProfile: FormGroup;
 
   constructor(
     private fb: FormBuilder, 
     private settingsService: CloudAppSettingsService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private toastr: ToastrService
   ) { }
 
   ngOnInit() {
@@ -43,9 +45,8 @@ export class SettingsComponent implements OnInit {
   }
 
   load() {
-    this.settingsService.get().subscribe((response) => {
-      const settings = JSON.parse(response['settings'] || '{}');
-      if (!Utils.isEmptyObject(settings)) this.form = Utils.toFormGroup(settings) as FormGroup;
+    this.settingsService.getAsFormGroup().subscribe( settings => {
+      if (!Utils.isEmptyObject(settings.value)) this.form = settings;
       this.setProfile();
       this.profiles.controls.forEach( f => f.get('fields').setValidators(this.validateFields));
       this.form.setValidators(this.validateForm);
@@ -53,14 +54,17 @@ export class SettingsComponent implements OnInit {
     });    
   }  
 
-  async save() {
+  save() {
     this.submitted = true;
     if (!this.form.valid) return;
-    this.status = 'Saving'
-    await this.settingsService.set(JSON.stringify(this.form.value)).toPromise();
-    this.status = 'Saved'; setInterval(()=>this.status='',1500);
-    this.form.markAsPristine();
-    this.submitted = false;
+    this.saving = true;
+    this.settingsService.set(this.form.value).subscribe( response => {
+      this.toastr.success(this.translate.instant('Settings.Saved'));
+      this.form.markAsPristine();
+      this.submitted = false;
+      this.saving = false;
+    },
+    err => this.toastr.error(err.message));
   }
 
   reset() {

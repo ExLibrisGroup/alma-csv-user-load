@@ -23,6 +23,7 @@
 		"Profiles": "Perfiles",
 		"Saving": "Ahorro",
 		"Saved": "Salvado",
+		"Back": "Retroceder",
 		"ProfileName": "Nombre de perfil",
 	  "ConfirmDeleteProfile": "¿Seguro que quieres eliminar este perfil?",
 		"ProfileExists": "El perfil \"{{name}}\" ya existe.",

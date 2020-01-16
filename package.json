@@ -6,7 +6,7 @@
     "start": "eca start"
   },
   "dependencies": {
-    "@exlibris/exl-cloudapp-base": "0.0.30",
+    "@exlibris/exl-cloudapp-base": "^0.1.9",
     "dot-object": "^2.1.2",
     "ngx-dropzone": "^2.2.2",
     "ngx-papaparse": "^4.0.4",

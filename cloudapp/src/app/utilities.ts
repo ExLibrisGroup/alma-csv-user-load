@@ -28,22 +28,4 @@ export const Utils = {
 
   /** Handles either resolved or rejected Promise */
   reflect: p => p.then(v => ({v, status: "fulfilled" }), e => ({e, status: "rejected" })),
-
-  /** Replace %s in string */
-  formatString: (str: string, ...args: string[]) => {
-    if (!str) return "";
-    let i = -1;
-    return str.replace(/%s/g, match => { i++; return args[i]; });  
-  },
-
-  /** TEMP: Convert object to FormGroup */
-  toFormGroup: (object: Object): AbstractControl => {
-    if (Array.isArray(object)) {
-      return new FormArray(object.map(entry=>Utils.toFormGroup(entry)));
-    } else if (typeof object === 'object' && object != null) {
-      return new FormGroup(Utils.mapObject(object, Utils.toFormGroup));
-    } else {
-      return new FormControl(object);
-    }
-  }
 }

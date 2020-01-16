@@ -31,12 +31,12 @@ export class MainComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.settingsService.get().toPromise().then(response => {
-      this.settings=JSON.parse(response['settings']) as Settings;
+    this.settingsService.get().subscribe(settings => {
+      this.settings = settings as Settings;
       this.selectedProfile = this.settings.profiles[0];
-    })
-    .catch(err => this.router.navigate(['/settings']));
-    this.router
+    },
+    err => this.router.navigate(['/settings'])
+    );
   }
 
   onSelect(event) {

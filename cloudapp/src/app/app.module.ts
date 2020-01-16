@@ -6,6 +6,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { NgxDropzoneModule } from 'ngx-dropzone';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ToastrModule } from 'ngx-toastr';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -13,16 +14,12 @@ import { MainComponent } from './main/main.component';
 import { SettingsComponent } from './settings/settings.component';
 import { ProfileComponent } from './settings/profile/profile.component'
 
-import {
-  MatInputModule, 
-  MatFormFieldModule,
-  MatButtonModule,
-  MatTableModule,
-  MatSelectModule,
-  MatExpansionModule,
-  MatIconModule,
-  MatProgressSpinnerModule
-} from '@angular/material'
+export function getToastrModule() {
+   return ToastrModule.forRoot({
+     positionClass: 'toast-top-right',
+     timeOut: 2000
+   });
+ }
 
 @NgModule({
    declarations: [
@@ -38,16 +35,9 @@ import {
       HttpClientModule,
       ReactiveFormsModule,
       getTranslateModule(),
+      getToastrModule(),
       BrowserAnimationsModule,
-      NgxDropzoneModule,
-      MatFormFieldModule,
-      MatInputModule,
-      MatButtonModule,
-      MatTableModule,
-      MatSelectModule,
-      MatExpansionModule,
-      MatIconModule,
-      MatProgressSpinnerModule      
+      NgxDropzoneModule   
    ],
    providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}],
    bootstrap: [
