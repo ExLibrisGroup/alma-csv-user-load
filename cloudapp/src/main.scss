@@ -5,4 +5,7 @@
 
 @mixin global-styles {
     /* Add global styles here */
+    body {
+        margin-top: 10px!important;
+    }
 }

@@ -1,14 +1,16 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Injectable } from '@angular/core';
 import { Papa, ParseResult } from 'ngx-papaparse';
 import * as dot from 'dot-object';
 import { Utils } from '../utilities';
 import { Settings, Profile } from '../models/settings';
 import {
   CloudAppRestService, CloudAppSettingsService, 
-  Request, HttpMethod, RestErrorResponse
+  Request, HttpMethod
 } from '@exlibris/exl-cloudapp-angular-lib';
-import { Router } from '@angular/router';
+import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-main',
@@ -26,7 +28,6 @@ export class MainComponent implements OnInit {
     private settingsService: CloudAppSettingsService, 
     private restService: CloudAppRestService, 
     private papa: Papa,
-    private router: Router,
     private translate: TranslateService
   ) { }
 
@@ -34,9 +35,7 @@ export class MainComponent implements OnInit {
     this.settingsService.get().subscribe(settings => {
       this.settings = settings as Settings;
       this.selectedProfile = this.settings.profiles[0];
-    },
-    err => this.router.navigate(['/settings'])
-    );
+    });
   }
 
   onSelect(event) {
@@ -90,7 +89,7 @@ export class MainComponent implements OnInit {
         .then(results => { 
           results.forEach(res=>this.log(res.status=='fulfilled' ? 
             'Created: ' + res.v.primary_id :
-            'Failed: ' + this.parseAlmaError(res.e))
+            'Failed: ' + res.e.message)
           );         
         })
       });
@@ -134,15 +133,25 @@ export class MainComponent implements OnInit {
 
     return obj;
   }
+}
 
-  private parseAlmaError(e: RestErrorResponse /*HttpErrorResponse*/) {
-    const error = e.error;
-    if (error.web_service_result) {
-      return error.web_service_result.errorList.error.errorMessage
-    } else if (error.errorList) {
-      return error.errorList.error[0].errorMessage
-    } else {
-      return e.message;
-    }
+@Injectable({
+  providedIn: 'root',
+})
+export class MainGuard implements CanActivate {
+  constructor(
+    private settingsService: CloudAppSettingsService,
+    private router: Router
+  ) {}
+  canActivate(
+    next: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot): Observable<boolean> {
+      return this.settingsService.get().pipe( map( settings => {
+        if (!settings.profiles) {
+          this.router.navigate(['settings']);
+          return false;
+        }
+        return true;
+      }))
   }
 }
