@@ -1,16 +1,14 @@
 import { Component, OnInit, ViewChild, ElementRef, Injectable } from '@angular/core';
 import { Papa, ParseResult } from 'ngx-papaparse';
 import * as dot from 'dot-object';
-import { Utils } from '../utilities';
 import { Settings, Profile } from '../models/settings';
-import {
-  CloudAppRestService, CloudAppSettingsService, 
-  Request, HttpMethod
-} from '@exlibris/exl-cloudapp-angular-lib';
+import { CloudAppRestService, CloudAppSettingsService, Request, HttpMethod, RestErrorResponse } from '@exlibris/exl-cloudapp-angular-lib';
 import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, from, of } from 'rxjs';
+import { map, catchError, mergeMap, bufferCount } from 'rxjs/operators';
+
+const MAX_PARALLEL_CALLS = 10;
 
 @Component({
   selector: 'app-main',
@@ -22,6 +20,7 @@ export class MainComponent implements OnInit {
   settings: Settings;
   selectedProfile: Profile;
   results: String = '';
+  running: boolean;
   @ViewChild('resultsPanel', {static: false}) private resultsPanel: ElementRef;
 
   constructor ( 
@@ -80,21 +79,22 @@ export class MainComponent implements OnInit {
     if (result.errors.length>0) 
       console.warn('Errors:', result.errors);
 
-    let users = result.data.map(row => dot.object(this.mapUser(row)));
-    console.log('users', users);
+    let users: any[] = result.data.map(row => dot.object(this.mapUser(row))), results = [];
     if(confirm(this.translate.instant("Main.ConfirmCreateUsers", {count: users.length}))) {
-      /* Chunk into 10 updates at at time */
-      await Utils.asyncForEach(Utils.chunk(users, 10), async (batch) => {
-        await Promise.all(batch.map(user => this.createUser(user))
-        .map(Utils.reflect)) /* Handle resolution or rejection */
-        .then(results => { 
-          results.forEach(res=>this.log(res.status=='fulfilled' ? 
-            'Created: ' + res.v.primary_id :
-            'Failed: ' + res.e.message)
-          );         
-        })
+      this.running = true;
+      from(users.map(user => this.createUser(user)))
+      .pipe(mergeMap(obs=>obs, MAX_PARALLEL_CALLS))
+      .subscribe({
+        next: result => results.push(result),
+        complete: () => {
+          results.forEach(res=>this.log( isRestErrorResponse(res) ?
+            `${this.translate.instant("Main.Failed")}: ${res.message}` : 
+            `${this.translate.instant("Main.Created")}: ${res.primary_id}` )
+          );
+          this.log(this.translate.instant('Main.Finished'));
+          this.running = false;
+        }
       });
-      this.log(`---- ${this.translate.instant('Main.Finished')} ----`);
     } else {
       this.results = '';
     }
@@ -106,19 +106,18 @@ export class MainComponent implements OnInit {
       method: HttpMethod.POST,
       requestBody: user
     };
-    return this.restService.call(request).toPromise();
+    return this.restService.call(request).pipe(catchError(e=>of(e)));
   }
 
   private mapUser = (user) => {
+    const arrayIndicator = new RegExp(/\[\d*\]/);
     /* Map CSV to user fields */
     let obj = Object.entries(user).reduce((a, [k,v]) => {
-      let f = this.selectedProfile.fields.find(f=>f.header===k.replace(/\[\d\]/,''))
+      let f = this.selectedProfile.fields.find(f=>f.header===k)
       if ( f && f.fieldName && v ) {
         let fieldName = f.fieldName;
-        if (fieldName.indexOf('[]')>0) { // array field
-          let i=-1, matches = k.match(/(\[\d\])/); // array position included in file, i.e. Address[0]
-          fieldName = matches ? 
-            fieldName.replace(/\[\]/g, () => { i++; return matches[i] || '[0]'; }) : fieldName.replace(/\[\]/g, '[0]');
+        if (arrayIndicator.test(fieldName)) { // array field
+          fieldName = fieldName.replace(arrayIndicator, `[${Object.keys(a).filter(k=>k.replace(arrayIndicator,'[]')===fieldName).length}]`)
         }
         a[fieldName] = v;
       }
@@ -156,3 +155,5 @@ export class MainGuard implements CanActivate {
       }))
   }
 }
+
+const isRestErrorResponse = (object: any): object is RestErrorResponse => 'error' in object;

@@ -18,12 +18,12 @@
 <div class="buttons">
   <button mat-stroked-button type="button" (click)="reset()" [disabled]="!!results">{{ 'Reset' | translate }}</button> 
   <button mat-stroked-button type="button" color="primary" (click)="load()" [disabled]="files.length==0 || !!results || !selectedProfile">{{ 'Main.LoadUsers' | translate }}</button>
-  <mat-spinner diameter="30" class="spinner" *ngIf="results && results.indexOf('----')<0"></mat-spinner>
+  <mat-spinner diameter="30" class="spinner" *ngIf="results && running"></mat-spinner>
 </div>
 
 <div *ngIf="results">
   <h2 translation="Results">Results</h2>
   <pre #resultsPanel>{{results}}</pre>
-  <button mat-stroked-button type="button" (click)="reset()" *ngIf="results.indexOf('----')>=0">OK</button> 
+  <button mat-stroked-button type="button" (click)="reset()" *ngIf="!running">OK</button> 
 </div>
 

@@ -117,12 +117,12 @@ export class SettingsComponent implements OnInit {
 
     /* Address type required */
     if (fields.value.some(f=>f['fieldName'].startsWith('contact_info.address'))
-      && !fields.value.some(f=>f['fieldName']=='contact_info.address[].address_type[].value'))
+      && !fields.value.some(f=>f['fieldName']=='contact_info.address[].address_type.0.value'))
       errorArray.push({code:'Settings.Validation.AddressTypeRequired'});
 
     /* Email type required */
     if (fields.value.some(f=>f['fieldName'].startsWith('contact_info.email'))
-      && !fields.value.some(f=>f['fieldName']=='contact_info.email[].email_type[].value'))  
+      && !fields.value.some(f=>f['fieldName']=='contact_info.email[].email_type.0.value'))  
       errorArray.push({code:'Settings.Validation.EmailTypeRequired'});
       
     return errorArray.length>0 ? errorArray : null;

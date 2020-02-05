@@ -7,7 +7,9 @@
 		"LoadUsers": "Load users",
 		"ConfirmCreateUsers": "Are you sure you want to create {{count}} users in Alma?",
 		"Finished": "Finished",
-		"Parsing": "Parsing CSV file"
+		"Parsing": "Parsing CSV file",
+		"Failed": "Failed",
+		"Created": "Created"
 	},
 	"Profile": {
 		"Internal": "Internal",
