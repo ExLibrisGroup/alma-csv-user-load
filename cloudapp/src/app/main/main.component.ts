@@ -6,7 +6,7 @@ import { CloudAppRestService, CloudAppSettingsService, Request, HttpMethod, Rest
 import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, from, of } from 'rxjs';
-import { map, catchError, mergeMap, bufferCount } from 'rxjs/operators';
+import { map, catchError, mergeMap } from 'rxjs/operators';
 
 const MAX_PARALLEL_CALLS = 10;
 

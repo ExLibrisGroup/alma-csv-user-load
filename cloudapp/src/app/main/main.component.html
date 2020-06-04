@@ -16,8 +16,8 @@
 </ngx-dropzone>
 
 <div class="buttons">
-  <button mat-stroked-button type="button" (click)="reset()" [disabled]="!!results">{{ 'Reset' | translate }}</button> 
   <button mat-stroked-button type="button" color="primary" (click)="load()" [disabled]="files.length==0 || !!results || !selectedProfile">{{ 'Main.LoadUsers' | translate }}</button>
+  <button mat-stroked-button type="button" (click)="reset()" [disabled]="!!results">{{ 'Reset' | translate }}</button> 
   <mat-spinner diameter="30" class="spinner" *ngIf="results && running"></mat-spinner>
 </div>
 

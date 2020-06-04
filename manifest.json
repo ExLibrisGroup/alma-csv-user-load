@@ -1,5 +1,4 @@
 {
-   "$schema": "./manifest.schema.json",
    "id": "alma-csv-user-load",
    "title": [
       {
@@ -11,16 +10,6 @@
          "text": "Alma CSV User Load"
       }
    ],
-   "subtitle": [
-      {
-         "lang": "en",
-         "text": "Load users from comma-separated file"
-      },
-      {
-         "lang": "es",
-         "text": "Cargar usuarios desde un archivo separado por comas"
-      }
-   ],
    "description": [
       {
          "lang": "en",
@@ -29,6 +18,16 @@
       {
          "lang": "es",
          "text": "Con esta aplicación, puede crear usuarios de Alma a partir de una lista en un archivo separado por comas. Es compatible con la configuración flexible en múltiples perfiles."
+      }
+   ],
+   "subtitle": [
+      {
+         "lang": "en",
+         "text": "Load users from comma-separated file"
+      },
+      {
+         "lang": "es",
+         "text": "Cargar usuarios desde un archivo separado por comas"
       }
    ],
    "icon": {

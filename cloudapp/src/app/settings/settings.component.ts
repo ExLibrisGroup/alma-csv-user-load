@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormArray, FormGroup, ValidatorFn, AbstractControl } from '@angular/forms';
+import { FormBuilder, FormArray, FormGroup, AbstractControl } from '@angular/forms';
 import { Utils } from '../utilities';
 import { CloudAppSettingsService } from '@exlibris/exl-cloudapp-angular-lib';
 import { TranslateService } from '@ngx-translate/core';
