@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, Input, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormArray, FormGroup, FormControl } from '@angular/forms';
-import { MatTableDataSource, MatTable } from '@angular/material';
+import { MatTableDataSource, MatTable } from '@angular/material/table';
 
 @Component({
   selector: 'app-settings-profile',

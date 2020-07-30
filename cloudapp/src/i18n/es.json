@@ -33,6 +33,7 @@
 		"Validation": {
 			"AddressTypeRequired": "Tipo de dirección requerida",
 			"EmailTypeRequired": "Tipo de correo electrónico requerido",
+			"NoteTypeRequired": "Tipo de nota requerido",
 			"FieldNameRequired": "Cada campo en el perfil \"{{profile}}\" debe tener un nombre de campo.",
 			"HeaderRequired": "Cada campo en el perfil \"{{profile}}\" debe tener un valor predeterminado o de encabezado."
 		}

@@ -124,7 +124,12 @@ export class SettingsComponent implements OnInit {
     if (fields.value.some(f=>f['fieldName'].startsWith('contact_info.email'))
       && !fields.value.some(f=>f['fieldName']=='contact_info.email[].email_type.0.value'))  
       errorArray.push({code:'Settings.Validation.EmailTypeRequired'});
-      
+
+    /* Note type required */
+    if (fields.value.some(f=>f['fieldName'].startsWith('user_note'))
+      && !fields.value.some(f=>f['fieldName']=='user_note[].note_type.value'))  
+      errorArray.push({code:'Settings.Validation.NoteTypeRequired'});
+
     return errorArray.length>0 ? errorArray : null;
   }
 

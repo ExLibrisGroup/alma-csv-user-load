@@ -8,7 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Observable, from, of } from 'rxjs';
 import { map, catchError, mergeMap } from 'rxjs/operators';
 
-const MAX_PARALLEL_CALLS = 10;
+const MAX_PARALLEL_CALLS = 5;
 
 @Component({
   selector: 'app-main',
@@ -80,10 +80,12 @@ export class MainComponent implements OnInit {
       console.warn('Errors:', result.errors);
 
     let users: any[] = result.data.map(row => dot.object(this.mapUser(row))), results = [];
+    /* Generation of primary ID is not thread safe; only parallelize if primary ID is supplied */
+    const parallel = users.every(user=>user.primary_id) ? MAX_PARALLEL_CALLS : 1;
     if(confirm(this.translate.instant("Main.ConfirmCreateUsers", {count: users.length}))) {
       this.running = true;
       from(users.map(user => this.createUser(user)))
-      .pipe(mergeMap(obs=>obs, MAX_PARALLEL_CALLS))
+      .pipe(mergeMap(obs=>obs, parallel))
       .subscribe({
         next: result => results.push(result),
         complete: () => {
@@ -124,9 +126,11 @@ export class MainComponent implements OnInit {
       return a;
     }, {});  
     /* Default values */
+    let occurances = {};
     this.selectedProfile.fields.filter(f=>f.default).forEach(f=>{
-      if (!obj[f.fieldName])
-        obj[f.fieldName.replace(/\[\]/g,'[0]')] = f.default;
+      occurances[f.fieldName] = (occurances[f.fieldName] == undefined ? -1 : occurances[f.fieldName]) + 1;
+      let name = f.fieldName.replace(/\[\]/g,`[${occurances[f.fieldName]}]`);
+      if (!obj[name]) obj[name] = f.default;
     })
     /* Account Type */
     obj['account_type'] = { value: this.selectedProfile.accountType };

@@ -33,6 +33,7 @@
 		"Validation": {
 			"AddressTypeRequired": "Address type required",
 			"EmailTypeRequired": "Email type required",
+			"NoteTypeRequired": "Note type required",
 			"FieldNameRequired": "Each field in profile \"{{profile}}\" must have a field name.",
 			"HeaderRequired": "Each field in profile \"{{profile}}\" must have either a default or a header value."
 		}		
