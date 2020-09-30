@@ -79,7 +79,7 @@ export class MainComponent implements OnInit {
     if (result.errors.length>0) 
       console.warn('Errors:', result.errors);
 
-    let users: any[] = result.data.map(row => dot.object(this.mapUser(row))), results = [];
+    let users: any[] = result.data.map(row => this.mapUser(row)), results = [];
     /* Generation of primary ID is not thread safe; only parallelize if primary ID is supplied */
     const parallel = users.every(user=>user.primary_id) ? MAX_PARALLEL_CALLS : 1;
     if(confirm(this.translate.instant("Main.ConfirmCreateUsers", {count: users.length}))) {
@@ -132,6 +132,16 @@ export class MainComponent implements OnInit {
       let name = f.fieldName.replace(/\[\]/g,`[${occurances[f.fieldName]}]`);
       if (!obj[name]) obj[name] = f.default;
     })
+    obj = dot.object(obj);
+    /* Preferred address, email, phone */
+    if (obj['contact_info']) {
+      if (Array.isArray(obj['contact_info']['address']) && obj['contact_info']['address'].length > 0)
+        obj['contact_info']['address'][0]['preferred'] = true;
+      if (Array.isArray(obj['contact_info']['email']) && obj['contact_info']['email'].length > 0)
+        obj['contact_info']['email'][0]['preferred'] = true;
+      if (Array.isArray(obj['contact_info']['phone']) && obj['contact_info']['phone'].length > 0)
+        obj['contact_info']['phone'][0]['preferred'] = true;
+    }
     /* Account Type */
     obj['account_type'] = { value: this.selectedProfile.accountType };
 
