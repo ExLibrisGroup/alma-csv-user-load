@@ -9,6 +9,14 @@
   </div>
   <h1 translate="">Settings.Title</h1>
 </div>
+<div *ngIf="form.invalid && submitted">
+  <ul>
+    <li *ngFor="let error of formErrors">
+      <span [translate]="error.code" [translateParams]="error.params" class="alert alert-danger"></span>
+    </li>
+  </ul>
+</div>  
+
 
 <div class="loading-shade" *ngIf="saving">
   <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
@@ -38,13 +46,4 @@
   <hr/>
 
   <app-settings-profile [form]="selectedProfile"></app-settings-profile>
-
-  <div *ngIf="form.invalid && submitted" class="alert alert-danger">
-      <ul>
-        <li *ngFor="let error of formErrors">
-          <span [translate]="error.code" [translateParams]="error.params"></span>
-        </li>
-      </ul>
-    </div>  
-
 </form>

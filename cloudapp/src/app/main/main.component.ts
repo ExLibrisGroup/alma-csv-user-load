@@ -1,12 +1,13 @@
-import { Component, OnInit, ViewChild, ElementRef, Injectable } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Injectable, Inject } from '@angular/core';
 import { Papa, ParseResult } from 'ngx-papaparse';
 import * as dot from 'dot-object';
 import { Settings, Profile } from '../models/settings';
+import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CloudAppRestService, CloudAppSettingsService, Request, HttpMethod, RestErrorResponse } from '@exlibris/exl-cloudapp-angular-lib';
 import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, from, of } from 'rxjs';
-import { map, catchError, mergeMap } from 'rxjs/operators';
+import { map, catchError, mergeMap, tap, switchMap } from 'rxjs/operators';
 
 const MAX_PARALLEL_CALLS = 5;
 
@@ -27,6 +28,7 @@ export class MainComponent implements OnInit {
     private settingsService: CloudAppSettingsService, 
     private restService: CloudAppRestService, 
     private papa: Papa,
+    public dialog: MatDialog,
     private translate: TranslateService
   ) { }
 
@@ -82,33 +84,74 @@ export class MainComponent implements OnInit {
     let users: any[] = result.data.map(row => this.mapUser(row)), results = [];
     /* Generation of primary ID is not thread safe; only parallelize if primary ID is supplied */
     const parallel = users.every(user=>user.primary_id) ? MAX_PARALLEL_CALLS : 1;
-    if(confirm(this.translate.instant("Main.ConfirmCreateUsers", {count: users.length}))) {
-      this.running = true;
-      from(users.map(user => this.createUser(user)))
-      .pipe(mergeMap(obs=>obs, parallel))
-      .subscribe({
-        next: result => results.push(result),
-        complete: () => {
-          results.forEach(res=>this.log( isRestErrorResponse(res) ?
-            `${this.translate.instant("Main.Failed")}: ${res.message}` : 
-            `${this.translate.instant("Main.Created")}: ${res.primary_id}` )
-          );
-          this.log(this.translate.instant('Main.Finished'));
-          this.running = false;
-        }
-      });
-    } else {
-      this.results = '';
-    }
+    const dialogRef = this.dialog.open(MainDialog, { data: { count: users.length, type: this.selectedProfile.profileType }});
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.running = true;
+        from(users.map(user => this.processUser(user)))
+        .pipe(mergeMap(obs=>obs, parallel))
+        .subscribe({
+          next: result => results.push(result),
+          complete: () => {
+            results.forEach(res=>this.log( isRestErrorResponse(res) ?
+              `${this.translate.instant("Main.Failed")}: ${res.message}` : 
+              `${this.translate.instant("Main.Processed")}: ${res.primary_id}` )
+            );
+            this.log(this.translate.instant('Main.Finished'));
+            this.running = false;
+          }
+        });
+      } else {
+        this.results = '';
+      }
+    });
   }
 
-  private createUser(user) {
-    let request: Request = {
-      url: '/users',
-      method: HttpMethod.POST,
-      requestBody: user
-    };
-    return this.restService.call(request).pipe(catchError(e=>of(e)));
+  private processUser(user: any) {
+    switch (this.selectedProfile.profileType) {
+      case 'ADD':
+        return this.restService.call({
+          url: '/users',
+          method: HttpMethod.POST,
+          requestBody: user
+        }).pipe(catchError(e=>of(e)));
+      case 'UPDATE':
+        return this.restService.call(`/users/${user.primary_id}`).pipe(
+          catchError(e=>{
+            if (e.error && e.error.errorList && e.error.errorList.error[0].errorCode == '401861') {
+              return of(null)
+            } else {
+              throw(e);
+            }
+          }),
+          switchMap(original=>{
+            if (original==null) {
+              return this.restService.call({
+                url: '/users',
+                method: HttpMethod.POST,
+                requestBody: user
+              }).pipe(catchError(e=>of(e)));
+            } else {
+              delete original['user_role']; // Don't update roles
+              return this.restService.call({
+                url: `/users/${user.primary_id}`,
+                method: HttpMethod.PUT,
+                requestBody: Object.assign(original, user)
+              })
+            }
+          }),
+          catchError(e=>of(e))
+        )
+      case 'DELETE': 
+        return this.restService.call({
+          url: `/users/${user.primary_id}`,
+          method: HttpMethod.DELETE
+        }).pipe(
+          map(()=>({primary_id: user.primary_id})),
+          catchError(e=>of(e))
+        );
+    }
+
   }
 
   private mapUser = (user) => {
@@ -171,3 +214,11 @@ export class MainGuard implements CanActivate {
 }
 
 const isRestErrorResponse = (object: any): object is RestErrorResponse => 'error' in object;
+
+@Component({
+  selector: 'main-dialog',
+  templateUrl: 'main-dialog.html',
+})
+export class MainDialog {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { count: number, type: string }) {}
+}

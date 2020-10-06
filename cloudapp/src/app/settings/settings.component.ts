@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormArray, FormGroup, AbstractControl } from '@angular/forms';
+import { FormBuilder, FormArray, FormGroup, AbstractControl, FormControl } from '@angular/forms';
 import { Utils } from '../utilities';
 import { CloudAppSettingsService } from '@exlibris/exl-cloudapp-angular-lib';
 import { TranslateService } from '@ngx-translate/core';
@@ -40,13 +40,19 @@ export class SettingsComponent implements OnInit {
     return this.fb.group({
       name: name,
       accountType: "INTERNAL",
+      profileType: "ADD",
       fields: this.fb.array([ ])  
     })
   }
 
   load() {
     this.settingsService.getAsFormGroup().subscribe( settings => {
-      if (!Utils.isEmptyObject(settings.value)) this.form = settings;
+      if (!Utils.isEmptyObject(settings.value)) {
+        (settings.get('profiles') as FormArray).controls.forEach((profile: FormGroup)=>{
+          if (!profile.get('profileType')) profile.addControl('profileType', new FormControl('ADD'));
+        })
+        this.form = settings;
+      }
       this.setProfile();
       this.profiles.controls.forEach( f => f.get('fields').setValidators(this.validateFields));
       this.form.setValidators(this.validateForm);
@@ -145,6 +151,15 @@ export class SettingsComponent implements OnInit {
         errorArray.push({code:'Settings.Validation.FieldNameRequired', params:{profile:p.get('name').value}})
       if ( fields.value.some(f=>!f['header'] && !f['default']))
         errorArray.push({code:'Settings.Validation.HeaderRequired', params:{profile:p.get('name').value}})
+    })
+
+    /* If Update/Delete, must have primary ID field */
+    profiles.controls.forEach( p => {
+      if (['UPDATE', 'DELETE'].includes(p.get('profileType').value)) {
+        const fields = p.get('fields');
+        if ( !fields.value.some(f=>f['fieldName']=='primary_id'))
+          errorArray.push({code:'Settings.Validation.PrimaryIdRequired', params:{profile:p.get('name').value}})
+      }
     })
 
     return errorArray.length>0 ? errorArray : null;

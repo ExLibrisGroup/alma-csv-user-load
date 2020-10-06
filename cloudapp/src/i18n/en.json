@@ -1,15 +1,17 @@
 {
 	"Reset": "Reset",	
 	"Save": "Save",
+	"OK": "OK",
+	"Cancel": "Cancel",
 	"Main": {
 		"SelectProfile": "Select a profile",
 		"DragCsv": "Drag a CSV file or click to browse",
 		"LoadUsers": "Load users",
-		"ConfirmCreateUsers": "Are you sure you want to create {{count}} users in Alma?",
+		"ConfirmCreateUsers": "Are you sure you want to {type, select, ADD {create} UPDATE {create/update} DELETE {DELETE}} {count} users in Alma?",
 		"Finished": "Finished",
 		"Parsing": "Parsing CSV file",
 		"Failed": "Failed",
-		"Created": "Created"
+		"Processed": "Processed"
 	},
 	"Profile": {
 		"Internal": "Internal",
@@ -18,7 +20,11 @@
 		"FieldMapping": "Field Mapping",
 		"Default": "Default",
 		"Name": "Name",		
-		"UserType": "User Type"
+		"UserType": "User Type",
+		"ProfileType": "Profile Type",
+		"Add": "Add",
+		"Update": "Add/Update",
+		"Delete": "Delete"
 	},
 	"Settings": {
 		"Title": "Settings",
@@ -28,14 +34,15 @@
 		"Back": "Back",
 		"ProfileName": "Profile name",
 		"ConfirmDeleteProfile": "Are you sure you want to delete this profile?",
-		"ProfileExists": "Profile {{name}} already exists.",
+		"ProfileExists": "Profile {name} already exists.",
 		"RenameProfile": "Rename profile",
 		"Validation": {
 			"AddressTypeRequired": "Address type required",
 			"EmailTypeRequired": "Email type required",
 			"NoteTypeRequired": "Note type required",
-			"FieldNameRequired": "Each field in profile \"{{profile}}\" must have a field name.",
-			"HeaderRequired": "Each field in profile \"{{profile}}\" must have either a default or a header value."
+			"FieldNameRequired": "Each field in profile \"{profile}\" must have a field name.",
+			"PrimaryIdRequired": "Primary ID required for Update/Delete profiles",
+			"HeaderRequired": "Each field in profile \"{profile}\" must have either a default or a header value."
 		}		
 	}
 }

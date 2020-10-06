@@ -1,9 +1,17 @@
 <div class="profile-container">
-  <mat-form-field>
+  <mat-form-field class="full-width">
     <mat-label translate>Profile.UserType</mat-label>
     <mat-select [formControl]="accountType">
       <mat-option value="INTERNAL"><span translate>Profile.Internal</span></mat-option>
       <mat-option value="EXTERNAL"><span translate>Profile.External</span></mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field class="full-width">
+    <mat-label translate>Profile.ProfileType</mat-label>
+    <mat-select [formControl]="profileType">
+      <mat-option value="ADD"><span translate>Profile.Add</span></mat-option>
+      <mat-option value="UPDATE"><span translate>Profile.Update</span></mat-option>
+      <mat-option value="DELETE"><span translate>Profile.Delete</span></mat-option>
     </mat-select>
   </mat-form-field>
   

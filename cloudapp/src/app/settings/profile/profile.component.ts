@@ -34,4 +34,5 @@ export class ProfileComponent implements OnInit {
 
   get fields() { return this.form ? (this.form.get('fields') as FormArray) : new FormArray([])}
   get accountType() { return this.form ? (this.form.get('accountType') as FormControl) : new FormControl('')}
+  get profileType() { return this.form ? (this.form.get('profileType') as FormControl) : new FormControl('')}
 }

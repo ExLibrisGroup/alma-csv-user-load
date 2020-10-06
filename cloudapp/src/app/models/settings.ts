@@ -5,7 +5,14 @@ export interface Settings {
 export interface Profile {
   name: string,
   accountType: string,
+  profileType: ProfileType,
   fields: Field[];  
+}
+
+export enum ProfileType {
+  ADD = "ADD",
+  UPDATE = "UPDATE",
+  DELETE = "DELETE"
 }
 
 export interface Field {
