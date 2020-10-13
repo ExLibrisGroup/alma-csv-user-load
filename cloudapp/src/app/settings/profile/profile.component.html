@@ -22,7 +22,7 @@
     <ng-container matColumnDef="header">
       <mat-header-cell *matHeaderCellDef translate>Profile.Header</mat-header-cell>
       <mat-cell *matCellDef="let field" [formGroup]="field" class="border-right">
-        <input type="text" matInput formControlName="header"/>
+        <input type="text" matInput formControlName="header" [placeholder]="'Profile.Header' | translate"/>
       </mat-cell>
     </ng-container>  
   
@@ -30,7 +30,7 @@
     <ng-container matColumnDef="default">
         <mat-header-cell *matHeaderCellDef translate>Profile.Default</mat-header-cell>
         <mat-cell *matCellDef="let field" [formGroup]="field">
-          <input type="text" matInput formControlName="default"/>
+          <input type="text" matInput formControlName="default" [placeholder]="'Profile.Default' | translate"/>
         </mat-cell>
       </ng-container>  
   
@@ -59,6 +59,7 @@
             <mat-option value="user_identifier[].value">Identifier Value</mat-option>
             <mat-option value="user_note[].note_type.value">Note type</mat-option>
             <mat-option value="user_note[].note_text">Note text</mat-option>
+            <mat-option value="user_note[].user_viewable">Note visible to patrons (true/false)</mat-option>
             <mat-option value="user_statistic[].statistic_category.value">Statistical category</mat-option>
             <mat-option value="user_group.value">User Group</mat-option>
             <mat-option value="campus_code.value">Campus Code</mat-option>

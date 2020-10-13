@@ -157,14 +157,14 @@ export class MainComponent implements OnInit {
   private mapUser = (user) => {
     const arrayIndicator = new RegExp(/\[\d*\]/);
     /* Map CSV to user fields */
-    let obj = Object.entries(user).reduce((a, [k,v]) => {
+    let obj = Object.entries<string>(user).reduce((a, [k,v]) => {
       let f = this.selectedProfile.fields.find(f=>f.header===k)
       if ( f && f.fieldName && v ) {
         let fieldName = f.fieldName;
         if (arrayIndicator.test(fieldName)) { // array field
           fieldName = fieldName.replace(arrayIndicator, `[${Object.keys(a).filter(k=>k.replace(arrayIndicator,'[]')===fieldName).length}]`)
         }
-        a[fieldName] = v;
+        a[fieldName] = ['true', 'false'].includes(v) ? (v==='true') : v;
       }
       return a;
     }, {});  
