@@ -84,7 +84,10 @@ export class MainComponent implements OnInit {
     let users: any[] = result.data.map(row => this.mapUser(row)), results = [];
     /* Generation of primary ID is not thread safe; only parallelize if primary ID is supplied */
     const parallel = users.every(user=>user.primary_id) ? MAX_PARALLEL_CALLS : 1;
-    const dialogRef = this.dialog.open(MainDialog, { data: { count: users.length, type: this.selectedProfile.profileType }});
+    const dialogRef = this.dialog.open(MainDialog, { 
+      data: { count: users.length, type: this.selectedProfile.profileType }, 
+      autoFocus: false
+    });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.running = true;
@@ -114,7 +117,7 @@ export class MainComponent implements OnInit {
           url: '/users',
           method: HttpMethod.POST,
           requestBody: user
-        }).pipe(catchError(e=>of(e)));
+        }).pipe(catchError(e=>of(this.handleError(e, user))));
       case 'UPDATE':
         return this.restService.call(`/users/${user.primary_id}`).pipe(
           catchError(e=>{
@@ -130,7 +133,7 @@ export class MainComponent implements OnInit {
                 url: '/users',
                 method: HttpMethod.POST,
                 requestBody: user
-              }).pipe(catchError(e=>of(e)));
+              });
             } else {
               delete original['user_role']; // Don't update roles
               return this.restService.call({
@@ -140,7 +143,7 @@ export class MainComponent implements OnInit {
               })
             }
           }),
-          catchError(e=>of(e))
+          catchError(e=>of(this.handleError(e, user)))
         )
       case 'DELETE': 
         return this.restService.call({
@@ -152,6 +155,14 @@ export class MainComponent implements OnInit {
         );
     }
 
+  }
+
+  private handleError(e: RestErrorResponse, user: any) {
+    const props = ['primary_id', 'last_name', 'first_name'].map(p=>user[p]);
+    if (user) {
+      e.message = e.message + ` (${props.join(', ')})`
+    }
+    return e;
   }
 
   private mapUser = (user) => {

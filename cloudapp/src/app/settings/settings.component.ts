@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormArray, FormGroup, AbstractControl, FormControl } from '@angular/forms';
 import { Utils } from '../utilities';
-import { CloudAppSettingsService } from '@exlibris/exl-cloudapp-angular-lib';
+import { CloudAppSettingsService, AlertService } from '@exlibris/exl-cloudapp-angular-lib';
 import { TranslateService } from '@ngx-translate/core';
-import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-settings',
@@ -20,7 +19,7 @@ export class SettingsComponent implements OnInit {
     private fb: FormBuilder, 
     private settingsService: CloudAppSettingsService,
     private translate: TranslateService,
-    private toastr: ToastrService
+    private alert: AlertService
   ) { }
 
   ngOnInit() {
@@ -65,12 +64,12 @@ export class SettingsComponent implements OnInit {
     if (!this.form.valid) return;
     this.saving = true;
     this.settingsService.set(this.form.value).subscribe( response => {
-      this.toastr.success(this.translate.instant('Settings.Saved'));
+      this.alert.success(this.translate.instant('Settings.Saved'));
       this.form.markAsPristine();
       this.submitted = false;
       this.saving = false;
     },
-    err => this.toastr.error(err.message));
+    err => this.alert.error(err.message));
   }
 
   reset() {
