@@ -36,9 +36,9 @@
    },
    "pages": {
       "settings": "/#/settings",
-      "help": "https://github.com/jweisman/alma-csv-user-load/wiki/Alma-CSV-User-Load-Manual"
+      "help": "https://github.com/ExLibrisGroup/alma-csv-user-load/wiki/Alma-CSV-User-Load-Manual"
    },
-   "author": "Josh Weisman",
+   "author": "Ex Libris",
    "contentSecurity": {
       "sandbox": {
          "modals": true
