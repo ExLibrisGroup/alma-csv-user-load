@@ -1,41 +1,46 @@
 {
-  "Reset": "Reiniciar",	
-  "Save": "Salvar",	
+	"Cancel": "",
 	"Main": {
-		"SelectProfile": "Selecciona un perfil",
+		"ConfirmCreateUsers": "¿Seguro que quieres crear {count} usuarios en Alma?",
 		"DragCsv": "Arrastre un archivo CSV o haga clic para navegar",
-		"LoadUsers": "Cargar usuarios",
-		"ConfirmCreateUsers": "¿Seguro que quieres crear {{count}} usuarios en Alma?",
-		"Finished": "Terminado",
-		"Parsing": "Analizando el archivo CSV",
 		"Failed": "Fallido",
-		"Created": "Creado"
+		"Finished": "Terminado",
+		"LoadUsers": "Cargar usuarios",
+		"Parsing": "Analizando el archivo CSV",
+		"Processed": "",
+		"SelectProfile": "Selecciona un perfil"
 	},
+	"OK": "",
 	"Profile": {
-		"Internal": "Interno",
-		"External": "Externo",
-		"Header": "Encabezamiento",
-		"FieldMapping": "Mapeo de campo",
+		"Add": "",
 		"Default": "Defecto",
+		"Delete": "",
+		"External": "Externo",
+		"FieldMapping": "Mapeo de campo",
+		"Header": "Encabezamiento",
+		"Internal": "Interno",
 		"Name": "Nombre",
+		"ProfileType": "",
+		"Update": "",
 		"UserType": "Tipo de usuario"
 	},
+	"Reset": "Reiniciar",
+	"Save": "Salvar",
 	"Settings": {
-		"Title": "Configuraciones",
-		"Profiles": "Perfiles",
-		"Saving": "Ahorro",
-		"Saved": "Salvado",
-		"Back": "Retroceder",
+		"ConfirmDeleteProfile": "¿Seguro que quieres eliminar este perfil?",
+		"ProfileExists": "El perfil \"{name}\" ya existe.",
 		"ProfileName": "Nombre de perfil",
-	  "ConfirmDeleteProfile": "¿Seguro que quieres eliminar este perfil?",
-		"ProfileExists": "El perfil \"{{name}}\" ya existe.",
-		"RenameProfile": "Renombrar perfil",  
+		"Profiles": "Perfiles",
+		"RenameProfile": "Renombrar perfil",
+		"Saved": "Salvado",
+		"Title": "Configuraciones",
 		"Validation": {
 			"AddressTypeRequired": "Tipo de dirección requerida",
 			"EmailTypeRequired": "Tipo de correo electrónico requerido",
+			"FieldNameRequired": "Cada campo en el perfil \"{profile}\" debe tener un nombre de campo.",
+			"HeaderRequired": "Cada campo en el perfil \"{profile}\" debe tener un valor predeterminado o de encabezado.",
 			"NoteTypeRequired": "Tipo de nota requerido",
-			"FieldNameRequired": "Cada campo en el perfil \"{{profile}}\" debe tener un nombre de campo.",
-			"HeaderRequired": "Cada campo en el perfil \"{{profile}}\" debe tener un valor predeterminado o de encabezado."
+			"PrimaryIdRequired": "Se requiere ID principal para actualizar / eliminar perfiles"
 		}
 	}
 }

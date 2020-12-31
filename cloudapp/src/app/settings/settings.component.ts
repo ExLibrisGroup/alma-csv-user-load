@@ -3,6 +3,7 @@ import { FormBuilder, FormArray, FormGroup, AbstractControl, FormControl } from 
 import { Utils } from '../utilities';
 import { CloudAppSettingsService, AlertService } from '@exlibris/exl-cloudapp-angular-lib';
 import { TranslateService } from '@ngx-translate/core';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 
 @Component({
   selector: 'app-settings',
@@ -123,17 +124,17 @@ export class SettingsComponent implements OnInit {
     /* Address type required */
     if (fields.value.some(f=>f['fieldName'].startsWith('contact_info.address'))
       && !fields.value.some(f=>f['fieldName']=='contact_info.address[].address_type.0.value'))
-      errorArray.push({code:'Settings.Validation.AddressTypeRequired'});
+      errorArray.push({code:_('Settings.Validation.AddressTypeRequired')});
 
     /* Email type required */
     if (fields.value.some(f=>f['fieldName'].startsWith('contact_info.email'))
       && !fields.value.some(f=>f['fieldName']=='contact_info.email[].email_type.0.value'))  
-      errorArray.push({code:'Settings.Validation.EmailTypeRequired'});
+      errorArray.push({code:_('Settings.Validation.EmailTypeRequired')});
 
     /* Note type required */
     if (fields.value.some(f=>f['fieldName'].startsWith('user_note'))
       && !fields.value.some(f=>f['fieldName']=='user_note[].note_type.value'))  
-      errorArray.push({code:'Settings.Validation.NoteTypeRequired'});
+      errorArray.push({code:_('Settings.Validation.NoteTypeRequired')});
 
     return errorArray.length>0 ? errorArray : null;
   }
@@ -147,9 +148,9 @@ export class SettingsComponent implements OnInit {
     profiles.controls.forEach( p => {
       let fields = p.get('fields');
       if ( fields.value.some(f=>!f['fieldName']))
-        errorArray.push({code:'Settings.Validation.FieldNameRequired', params:{profile:p.get('name').value}})
+        errorArray.push({code:_('Settings.Validation.FieldNameRequired'), params:{profile:p.get('name').value}})
       if ( fields.value.some(f=>!f['header'] && !f['default']))
-        errorArray.push({code:'Settings.Validation.HeaderRequired', params:{profile:p.get('name').value}})
+        errorArray.push({code:_('Settings.Validation.HeaderRequired'), params:{profile:p.get('name').value}})
     })
 
     /* If Update/Delete, must have primary ID field */
@@ -157,7 +158,7 @@ export class SettingsComponent implements OnInit {
       if (['UPDATE', 'DELETE'].includes(p.get('profileType').value)) {
         const fields = p.get('fields');
         if ( !fields.value.some(f=>f['fieldName']=='primary_id'))
-          errorArray.push({code:'Settings.Validation.PrimaryIdRequired', params:{profile:p.get('name').value}})
+          errorArray.push({code:_('Settings.Validation.PrimaryIdRequired'), params:{profile:p.get('name').value}})
       }
     })
 
