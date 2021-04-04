@@ -2,10 +2,6 @@ div.profile-container {
   padding-top: 25px;
 }
 
-mat-header-cell {
-  padding: 15px;
-}
-
 .mat-column-actions {
   flex: 0 0 50px;
 }
@@ -14,20 +10,17 @@ mat-header-cell {
   color: red;
 }
 
-mat-cell {
+.mat-header-cell,
+.mat-cell {
   padding: 5px;
-}
-
-mat-cell.border-right {
-  border-right: 1px solid grey;
 }
 
 .full-width {
   width: 80%;
 }
 
-mat-cell:first-child,
-mat-footer-cell:first-child,
-mat-header-cell:first-child {
+.mat-cell:first-child,
+.mat-footer-cell:first-child,
+.mat-header-cell:first-child {
     padding-left: 0px !important;
 }

@@ -22,7 +22,9 @@
     <ng-container matColumnDef="header">
       <mat-header-cell *matHeaderCellDef translate>Profile.Header</mat-header-cell>
       <mat-cell *matCellDef="let field" [formGroup]="field" class="border-right">
-        <input type="text" matInput formControlName="header" [placeholder]="'Profile.Header' | translate"/>
+        <mat-form-field appearance="fill">
+          <input type="text" matInput formControlName="header" [placeholder]="'Profile.Header' | translate"/>
+        </mat-form-field>
       </mat-cell>
     </ng-container>  
   
@@ -30,7 +32,9 @@
     <ng-container matColumnDef="default">
         <mat-header-cell *matHeaderCellDef translate>Profile.Default</mat-header-cell>
         <mat-cell *matCellDef="let field" [formGroup]="field">
-          <input type="text" matInput formControlName="default" [placeholder]="'Profile.Default' | translate"/>
+          <mat-form-field appearance="fill">
+            <input type="text" matInput formControlName="default" [placeholder]="'Profile.Default' | translate"/>
+          </mat-form-field>
         </mat-cell>
       </ng-container>  
   
@@ -38,7 +42,7 @@
     <ng-container matColumnDef="name">
       <mat-header-cell *matHeaderCellDef translate>Profile.Name</mat-header-cell>
       <mat-cell *matCellDef="let field" [formGroup]="field">
-        <mat-form-field floatLabel="never">
+        <mat-form-field floatLabel="never" appearance="fill">
           <mat-select formControlName="fieldName" placeholder="Field Name">
             <mat-option value="primary_id">Primary ID</mat-option>
             <mat-option value="first_name">First Name</mat-option>
