@@ -1,5 +1,5 @@
 {
-	"Cancel": "",
+	"Cancel": "Cancelar",
 	"Main": {
 		"ConfirmCreateUsers": "¿Seguro que quieres crear {count} usuarios en Alma?",
 		"DragCsv": "Arrastre un archivo CSV o haga clic para navegar",
@@ -7,21 +7,21 @@
 		"Finished": "Terminado",
 		"LoadUsers": "Cargar usuarios",
 		"Parsing": "Analizando el archivo CSV",
-		"Processed": "",
+		"Processed": "Procesada",
 		"SelectProfile": "Selecciona un perfil"
 	},
-	"OK": "",
+	"OK": "OK",
 	"Profile": {
-		"Add": "",
+		"Add": "Agregar",
 		"Default": "Defecto",
-		"Delete": "",
+		"Delete": "Borrar",
 		"External": "Externo",
 		"FieldMapping": "Mapeo de campo",
 		"Header": "Encabezamiento",
 		"Internal": "Interno",
 		"Name": "Nombre",
-		"ProfileType": "",
-		"Update": "",
+		"ProfileType": "Tipo de perfil",
+		"Update": "Agregar / actualizar",
 		"UserType": "Tipo de usuario"
 	},
 	"Reset": "Reiniciar",
