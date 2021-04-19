@@ -152,7 +152,9 @@ export class SettingsComponent implements OnInit {
         if (!result) return;
         newProfiles.forEach(profile => {
           this.profiles.push(FormGroupUtil.toFormGroup(profile));
-          this.profiles.at(this.profiles.length-1).get('fields').setValidators(validateFields);
+          const index = this.profiles.length - 1;
+          this.profiles.at(index).get('fields').setValidators(validateFields);
+          this.setProfile(index);
         });
         replaceProfiles.forEach(profile => {
           const index = this.profiles.value.findIndex(p=>p.name===profile.name);
