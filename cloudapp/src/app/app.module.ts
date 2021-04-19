@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { MaterialModule, getTranslateModule, LazyTranslateLoader, AlertModule } from '@exlibris/exl-cloudapp-angular-lib';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgxDropzoneModule } from 'ngx-dropzone';
@@ -13,6 +14,7 @@ import { AppComponent } from './app.component';
 import { MainComponent, MainDialog } from './main/main.component';
 import { SettingsComponent } from './settings/settings.component';
 import { ProfileComponent } from './settings/profile/profile.component'
+import { DialogModule } from 'eca-components';
 
  export function getTranslateModuleWithICU() {
    return TranslateModule.forRoot({
@@ -43,6 +45,7 @@ import { ProfileComponent } from './settings/profile/profile.component'
       ReactiveFormsModule,
       getTranslateModule(),
       AlertModule,
+      DialogModule,
       BrowserAnimationsModule,
       NgxDropzoneModule,
       getTranslateModuleWithICU(),
@@ -50,7 +53,9 @@ import { ProfileComponent } from './settings/profile/profile.component'
    entryComponents: [
       MainDialog
    ],
-   providers: [],
+   providers: [
+      { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'standard' } },
+   ],
    bootstrap: [
       AppComponent
    ]

@@ -20,3 +20,12 @@ export interface Field {
   default: string,
   fieldName: string
 }
+
+export const validateProfiles = (profiles: Profile[]) => {
+  if (!Array.isArray(profiles)) return false;
+  profiles.forEach(profile => {
+    if (!profile.name || !profile.accountType || !(profile.profileType in ProfileType)) return false;
+    if (!Array.isArray(profile.fields)) return false;
+  })
+  return true;
+}
