@@ -89,11 +89,11 @@ export class SettingsComponent implements OnInit {
   }
 
   addProfile() {
-    this.dialog.prompt({ prompt: 'Settings.ProfileName' })
+    this.dialog.prompt({ prompt: _('Settings.ProfileName') })
     .subscribe( name => {
       if (!name) return;
       if (this.profiles.value.some(p=>p.name.toLowerCase() === name.toLowerCase())) {
-        return this.dialog.alert({ text: ['Settings.ProfileExists', { name: name }]});
+        return this.dialog.alert({ text: [_('Settings.ProfileExists'), { name: name }]});
       } else {
         this.profiles.push(this.newProfile(name));
         this.setProfile(this.profiles.length-1);
@@ -103,7 +103,7 @@ export class SettingsComponent implements OnInit {
   }
 
   deleteProfile() {
-    this.dialog.confirm({ text: 'Settings.ConfirmDeleteProfile' })
+    this.dialog.confirm({ text: _('Settings.ConfirmDeleteProfile') })
     .subscribe( result => {
       if (!result) return;
       this.profiles.removeAt(this.profiles.controls.findIndex( p => this.compareProfiles(p, this.selectedProfile)))
@@ -113,7 +113,7 @@ export class SettingsComponent implements OnInit {
   }
 
   renameProfile() {
-    this.dialog.prompt({ prompt: 'Settings.RenameProfile', val: this.selectedProfile.value.name })
+    this.dialog.prompt({ prompt: _('Settings.RenameProfile'), val: this.selectedProfile.value.name })
     .subscribe( name => {
       if (!!name) {
         this.selectedProfile.patchValue({name: name});
@@ -138,7 +138,7 @@ export class SettingsComponent implements OnInit {
       const replaceProfiles = profiles.filter(profile=>this.profiles.value.some(p=>p.name.toLowerCase() === profile.name.toLowerCase()));
       const data: DialogData = {
         text: [
-          'Settings.ConfirmImport', 
+          _('Settings.ConfirmImport'), 
           {
             countNew: newProfiles.length,
             new: newProfiles.map(p=>p.name).join(', '),
@@ -199,8 +199,8 @@ export class SettingsGuard implements CanDeactivate<SettingsComponent> {
   canDeactivate(component: SettingsComponent): Observable<boolean> {
     if(!component.form.dirty) return of(true);
     return this.dialog.confirm({ 
-      text: 'Settings.Discard',
-      ok: 'Settings.DiscardOk'
+      text: _('Settings.Discard'),
+      ok: _('Settings.DiscardOk')
     });
   }
 }
