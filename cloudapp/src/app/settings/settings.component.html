@@ -48,4 +48,4 @@
   <app-settings-profile [form]="selectedProfile"></app-settings-profile>
 </form>
 
-<input type="file" #file id="file" class="hidden" (change)="importProfiles($event.target.files)" accept="text/json" style="display: none;"/>
+<input type="file" #file id="file" class="hidden" (change)="readFile($event.target.files)" accept="text/json" style="display: none;"/>

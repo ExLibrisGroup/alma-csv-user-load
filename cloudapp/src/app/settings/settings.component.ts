@@ -122,53 +122,57 @@ export class SettingsComponent implements OnInit {
     })
   }
 
-  importProfiles(files: File[]) {
+  readFile(files: File[]) {
     const file = files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = async (event) => {
+    reader.onload = event => {
       const file = event.target.result;
-      if (typeof file != 'string') return;
-      const profiles: Profile[] = tryParse(file);
-      if (!profiles || !validateProfiles(profiles)) {
-        this.alert.error(this.translate.instant('Settings.InvalidProfiles'));
-        return;
-      }
-      const newProfiles = profiles.filter(profile=>!this.profiles.value.some(p=>p.name.toLowerCase() === profile.name.toLowerCase()));
-      const replaceProfiles = profiles.filter(profile=>this.profiles.value.some(p=>p.name.toLowerCase() === profile.name.toLowerCase()));
-      const data: DialogData = {
-        text: [
-          _('Settings.ConfirmImport'), 
-          {
-            countNew: newProfiles.length,
-            new: newProfiles.map(p=>p.name).join(', '),
-            countOverride: replaceProfiles.length,
-            override: replaceProfiles.map(p=>p.name).join(', '),
-            both: newProfiles.length > 0 && replaceProfiles.length > 0
-          }
-        ]
-      }
-      this.dialog.confirm(data).subscribe( result => {
-        if (!result) return;
-        newProfiles.forEach(profile => {
-          this.profiles.push(FormGroupUtil.toFormGroup(profile));
-          const index = this.profiles.length - 1;
-          this.profiles.at(index).get('fields').setValidators(validateFields);
-          this.setProfile(index);
-        });
-        replaceProfiles.forEach(profile => {
-          const index = this.profiles.value.findIndex(p=>p.name===profile.name);
-          this.profiles.removeAt(index);
-          this.profiles.insert(index, FormGroupUtil.toFormGroup(profile));
-          this.profiles.at(index).get('fields').setValidators(validateFields);
-          this.setProfile(index);
-        });
-        this.form.markAsDirty();
-      });
+      this.importProfiles(file);
       (document.getElementById('file') as HTMLInputElement).value = null;
     };
     reader.onerror = event => console.error(event.target.error.name);
     reader.readAsText(file);
+  }
+
+  importProfiles = file => {
+    if (typeof file != 'string') return;
+    const profiles: Profile[] = tryParse(file);
+    if (!profiles || !validateProfiles(profiles)) {
+      this.alert.error(this.translate.instant('Settings.InvalidProfiles'));
+      return;
+    }
+    const newProfiles = profiles.filter(profile=>!this.profiles.value.some(p=>p.name.toLowerCase() === profile.name.toLowerCase()));
+    const replaceProfiles = profiles.filter(profile=>this.profiles.value.some(p=>p.name.toLowerCase() === profile.name.toLowerCase()));
+    const data: DialogData = {
+      text: [
+        _('Settings.ConfirmImport'), 
+        {
+          countNew: newProfiles.length,
+          new: newProfiles.map(p=>p.name).join(', '),
+          countOverride: replaceProfiles.length,
+          override: replaceProfiles.map(p=>p.name).join(', '),
+          both: newProfiles.length > 0 && replaceProfiles.length > 0
+        }
+      ]
+    }
+    this.dialog.confirm(data).subscribe( result => {
+      if (!result) return;
+      newProfiles.forEach(profile => {
+        this.profiles.push(FormGroupUtil.toFormGroup(profile));
+        const index = this.profiles.length - 1;
+        this.profiles.at(index).get('fields').setValidators(validateFields);
+        this.setProfile(index);
+      });
+      replaceProfiles.forEach(profile => {
+        const index = this.profiles.value.findIndex(p=>p.name===profile.name);
+        this.profiles.removeAt(index);
+        this.profiles.insert(index, FormGroupUtil.toFormGroup(profile));
+        this.profiles.at(index).get('fields').setValidators(validateFields);
+        this.setProfile(index);
+      });
+      this.form.markAsDirty();
+    });
   }
 
   exportProfile() {
