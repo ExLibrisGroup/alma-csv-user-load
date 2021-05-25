@@ -8,6 +8,7 @@ import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, from, of } from 'rxjs';
 import { map, catchError, mergeMap, tap, switchMap } from 'rxjs/operators';
+import { DialogService } from 'eca-components';
 
 const MAX_PARALLEL_CALLS = 5;
 
@@ -29,7 +30,8 @@ export class MainComponent implements OnInit {
     private restService: CloudAppRestService, 
     private papa: Papa,
     public dialog: MatDialog,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private dialogs: DialogService,
   ) { }
 
   ngOnInit() {
@@ -84,29 +86,26 @@ export class MainComponent implements OnInit {
     let users: any[] = result.data.map(row => this.mapUser(row)), results = [];
     /* Generation of primary ID is not thread safe; only parallelize if primary ID is supplied */
     const parallel = users.every(user=>user.primary_id) ? MAX_PARALLEL_CALLS : 1;
-    const dialogRef = this.dialog.open(MainDialog, { 
-      data: { count: users.length, type: this.selectedProfile.profileType }, 
-      autoFocus: false
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.running = true;
-        from(users.map(user => this.processUser(user)))
-        .pipe(mergeMap(obs=>obs, parallel))
-        .subscribe({
-          next: result => results.push(result),
-          complete: () => {
-            results.forEach(res=>this.log( isRestErrorResponse(res) ?
-              `${this.translate.instant("Main.Failed")}: ${res.message}` : 
-              `${this.translate.instant("Main.Processed")}: ${res.primary_id}` )
-            );
-            this.log(this.translate.instant('Main.Finished'));
-            this.running = false;
-          }
-        });
-      } else {
+    this.dialogs.confirm({ text: ['Main.ConfirmCreateUsers', { count: users.length, type: this.selectedProfile.profileType }]})
+    .subscribe( result => {
+      if (!result) {
         this.results = '';
+        return;
       }
+      this.running = true;
+      from(users.map(user => this.processUser(user)))
+      .pipe(mergeMap(obs=>obs, parallel))
+      .subscribe({
+        next: result => results.push(result),
+        complete: () => {
+          results.forEach(res=>this.log( isRestErrorResponse(res) ?
+            `${this.translate.instant("Main.Failed")}: ${res.message}` : 
+            `${this.translate.instant("Main.Processed")}: ${res.primary_id}` )
+          );
+          this.log(this.translate.instant('Main.Finished'));
+          this.running = false;
+        }
+      });
     });
   }
 

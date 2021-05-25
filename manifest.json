@@ -41,7 +41,8 @@
    },
    "contentSecurity": {
       "sandbox": {
-         "modals": true
+         "modals": true,
+         "downloads": true
       }
    }
 }

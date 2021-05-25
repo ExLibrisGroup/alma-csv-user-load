@@ -4,6 +4,12 @@
       <mat-icon>arrow_back</mat-icon>
       Home
     </button>
+    <button mat-flat-button color="secondary" [matMenuTriggerFor]="import">{{'Settings.Share' | translate}}</button>
+      <mat-menu #import="matMenu">
+        <button mat-menu-item (click)="file.click()">{{'Settings.Import' | translate}}</button>
+        <button mat-menu-item (click)="exportProfile()">{{'Settings.Export' | translate}}</button>
+        <button mat-menu-item (click)="exportProfiles()">{{'Settings.ExportAll' | translate}}</button>
+      </mat-menu>
     <button mat-flat-button type="button" color="secondary" (click)="reset()" [disabled]="!form.dirty">{{ 'Reset' | translate }}</button> 
     <button mat-flat-button type="button" color="primary" (click)="save()" [disabled]="!form.dirty">{{ 'Save' | translate }}</button>
   </div>
@@ -26,24 +32,20 @@
 
   <h2 translate>Settings.Profiles</h2>
   <div class="profile-list">
-    <mat-select placeholder="Profile" [(value)]="selectedProfile" [compareWith]="compareProfiles">
-      <mat-select-trigger>{{selectedProfile?.value.name}}</mat-select-trigger>
-      <mat-option *ngFor="let profile of profiles.controls" [value]="profile">
-        {{profile.value.name}}
-      </mat-option>
-    </mat-select>
-    <button type="button" class="pull-right" (click)="addProfile()" mat-icon-button aria-label="Add profile" title="Add profile">
-        <mat-icon>add_circle</mat-icon>
-    </button>
-    <button type="button" (click)="renameProfile()" mat-icon-button aria-label="Rename profile" title="Rename profile">
-        <mat-icon>edit</mat-icon>
-    </button>    
-    <button type="button" (click)="deleteProfile()" mat-icon-button aria-label="Delete profile" title="Delete profile">
-        <mat-icon>delete_outline</mat-icon>
-    </button>
+    <mat-form-field>
+      <mat-label translate>Settings.SelectProfile</mat-label>
+      <mat-select placeholder="Profile" [(value)]="selectedProfile" [compareWith]="compareProfiles">
+        <mat-select-trigger>{{selectedProfile?.value.name}}</mat-select-trigger>
+        <mat-option *ngFor="let profile of profiles.controls" [value]="profile">
+          {{profile.value.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <i class="uxf-icon uxf-plus eca-button" (click)="addProfile()" attr.aria-label="{{'Settings.AddProfile'|translate}}" title="{{'Settings.AddProfile'|translate}}"></i>
+    <i class="uxf-icon uxf-pencil eca-button" (click)="renameProfile()" attr.aria-label="{{'Settings.RenameProfile'|translate}}" title="{{'Settings.RenameProfile'|translate}}"></i>
+    <i class="uxf-icon uxf-trash eca-button" (click)="deleteProfile()" attr.aria-label="{{'Settings.DeleteProfile'|translate}}" title="{{'Settings.DeleteProfile'|translate}}"></i>    
   </div>
-  
-  <hr/>
-
   <app-settings-profile [form]="selectedProfile"></app-settings-profile>
 </form>
+
+<input type="file" #file id="file" class="hidden" (change)="readFile($event.target.files)" accept="text/json" style="display: none;"/>
