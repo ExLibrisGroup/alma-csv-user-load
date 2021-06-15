@@ -8,7 +8,9 @@
 		"LoadUsers": "Load users",
 		"Parsing": "Parsing CSV file",
 		"Processed": "Processed",
-		"SelectProfile": "Select a profile"
+		"ResultsSummary": "{successCount} {successCount, plural, =1 {user} other {users}} successfully processed with {errorCount} {errorCount, plural, =1 {error} other {errors}}.",
+		"SelectProfile": "Select a profile",
+		"ShowLog": "Show log"
 	},
 	"OK": "OK",
 	"Profile": {

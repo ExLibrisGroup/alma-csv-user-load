@@ -8,7 +8,9 @@
 		"LoadUsers": "Cargar usuarios",
 		"Parsing": "Analizando el archivo CSV",
 		"Processed": "Procesada",
-		"SelectProfile": "Selecciona un perfil"
+		"ResultsSummary": "{successCount} {successCount, plural, =1 {usuario procesado correctamente} other {usuarios procesados ​​con éxito}} con {errorCount} {errorCount, plural, =1 {error} other {errores}}.",
+		"SelectProfile": "Selecciona un perfil",
+		"ShowLog": "Mostrar registro"
 	},
 	"OK": "OK",
 	"Profile": {

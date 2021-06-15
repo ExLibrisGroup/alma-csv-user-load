@@ -1,14 +1,14 @@
-import { Component, OnInit, ViewChild, ElementRef, Injectable, Inject } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Injectable } from '@angular/core';
 import { Papa, ParseResult } from 'ngx-papaparse';
-import * as dot from 'dot-object';
 import { Settings, Profile } from '../models/settings';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { CloudAppRestService, CloudAppSettingsService, Request, HttpMethod, RestErrorResponse } from '@exlibris/exl-cloudapp-angular-lib';
+import { CloudAppSettingsService, CloudAppStoreService, RestErrorResponse } from '@exlibris/exl-cloudapp-angular-lib';
 import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, from, of } from 'rxjs';
-import { map, catchError, mergeMap, tap, switchMap } from 'rxjs/operators';
+import { Observable, from } from 'rxjs';
+import { map, mergeMap, tap } from 'rxjs/operators';
 import { DialogService } from 'eca-components';
+import { UserService } from './user.service';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 const MAX_PARALLEL_CALLS = 5;
 
@@ -21,17 +21,21 @@ export class MainComponent implements OnInit {
   files: File[] = [];
   settings: Settings;
   selectedProfile: Profile;
-  results: String = '';
+  results = '';
+  resultsSummary: string;
+  showLog = false;
+  processed = 0;
+  recordsToProcess = 0;
   running: boolean;
   @ViewChild('resultsPanel', {static: false}) private resultsPanel: ElementRef;
 
   constructor ( 
     private settingsService: CloudAppSettingsService, 
-    private restService: CloudAppRestService, 
+    private userService: UserService, 
     private papa: Papa,
-    public dialog: MatDialog,
     private translate: TranslateService,
     private dialogs: DialogService,
+    private storeService: CloudAppStoreService,
   ) { }
 
   ngOnInit() {
@@ -39,6 +43,7 @@ export class MainComponent implements OnInit {
       this.settings = settings as Settings;
       this.selectedProfile = this.settings.profiles[0];
     });
+    this.storeService.get('showLog').subscribe(val => this.showLog = val);
   }
 
   onSelect(event) {
@@ -52,6 +57,9 @@ export class MainComponent implements OnInit {
   reset() {
     this.files = [];
     this.results = '';
+    this.resultsSummary = '';
+    this.processed = 0;
+    this.recordsToProcess = 0;
   }
 
   compareProfiles(o1: Profile, o2: Profile): boolean {
@@ -59,7 +67,6 @@ export class MainComponent implements OnInit {
   }  
 
   load() {
-    this.log(this.translate.instant('Main.Parsing'));
     this.papa.parse(this.files[0], {
       header: true,
       complete: this.parsed,
@@ -77,13 +84,21 @@ export class MainComponent implements OnInit {
     } catch(err) { }                 
   }  
 
+  showLogChanged(event: MatCheckboxChange) {
+    this.storeService.set('showLog', event.checked).subscribe();
+  }
+
+  get percentComplete() {
+    return Math.round((this.processed/this.recordsToProcess)*100)
+  }
+
   private log = (str: string) => this.results += `${str}\n`;  
 
   private parsed = async (result: ParseResult) => {
     if (result.errors.length>0) 
       console.warn('Errors:', result.errors);
 
-    let users: any[] = result.data.map(row => this.mapUser(row)), results = [];
+    let users: any[] = result.data.map(row => this.userService.mapUser(row, this.selectedProfile)), results = [];
     /* Generation of primary ID is not thread safe; only parallelize if primary ID is supplied */
     const parallel = users.every(user=>user.primary_id) ? MAX_PARALLEL_CALLS : 1;
     this.dialogs.confirm({ text: ['Main.ConfirmCreateUsers', { count: users.length, type: this.selectedProfile.profileType }]})
@@ -92,113 +107,35 @@ export class MainComponent implements OnInit {
         this.results = '';
         return;
       }
+      this.recordsToProcess = users.length;
       this.running = true;
-      from(users.map(user => this.processUser(user)))
+      from(users.map(user => 
+        this.userService
+        .processUser(user, this.selectedProfile.profileType)
+        .pipe(tap(() => this.processed++))
+        )
+      )
       .pipe(mergeMap(obs=>obs, parallel))
       .subscribe({
         next: result => results.push(result),
         complete: () => {
-          results.forEach(res=>this.log( isRestErrorResponse(res) ?
-            `${this.translate.instant("Main.Failed")}: ${res.message}` : 
-            `${this.translate.instant("Main.Processed")}: ${res.primary_id}` )
-          );
-          this.log(this.translate.instant('Main.Finished'));
-          this.running = false;
+          setTimeout(() => {
+            let successCount = 0, errorCount = 0; 
+            results.forEach(res => {
+              if (isRestErrorResponse(res)) {
+                errorCount++;
+                this.log(`${this.translate.instant("Main.Failed")}: ${res.message}`);
+              } else {
+                successCount++;
+                this.log(`${this.translate.instant("Main.Processed")}: ${res.primary_id}`);
+              }
+            });
+            this.resultsSummary = this.translate.instant('Main.ResultsSummary', { successCount, errorCount })
+            this.running = false;
+          }, 500);
         }
       });
     });
-  }
-
-  private processUser(user: any) {
-    switch (this.selectedProfile.profileType) {
-      case 'ADD':
-        return this.restService.call({
-          url: '/users',
-          method: HttpMethod.POST,
-          requestBody: user
-        }).pipe(catchError(e=>of(this.handleError(e, user))));
-      case 'UPDATE':
-        return this.restService.call(`/users/${user.primary_id}`).pipe(
-          catchError(e=>{
-            if (e.error && e.error.errorList && e.error.errorList.error[0].errorCode == '401861') {
-              return of(null)
-            } else {
-              throw(e);
-            }
-          }),
-          switchMap(original=>{
-            if (original==null) {
-              return this.restService.call({
-                url: '/users',
-                method: HttpMethod.POST,
-                requestBody: user
-              });
-            } else {
-              delete original['user_role']; // Don't update roles
-              return this.restService.call({
-                url: `/users/${user.primary_id}`,
-                method: HttpMethod.PUT,
-                requestBody: Object.assign(original, user)
-              })
-            }
-          }),
-          catchError(e=>of(this.handleError(e, user)))
-        )
-      case 'DELETE': 
-        return this.restService.call({
-          url: `/users/${user.primary_id}`,
-          method: HttpMethod.DELETE
-        }).pipe(
-          map(()=>({primary_id: user.primary_id})),
-          catchError(e=>of(e))
-        );
-    }
-
-  }
-
-  private handleError(e: RestErrorResponse, user: any) {
-    const props = ['primary_id', 'last_name', 'first_name'].map(p=>user[p]);
-    if (user) {
-      e.message = e.message + ` (${props.join(', ')})`
-    }
-    return e;
-  }
-
-  private mapUser = (user) => {
-    const arrayIndicator = new RegExp(/\[\d*\]/);
-    /* Map CSV to user fields */
-    let obj = Object.entries<string>(user).reduce((a, [k,v]) => {
-      let f = this.selectedProfile.fields.find(f=>f.header===k)
-      if ( f && f.fieldName && v ) {
-        let fieldName = f.fieldName;
-        if (arrayIndicator.test(fieldName)) { // array field
-          fieldName = fieldName.replace(arrayIndicator, `[${Object.keys(a).filter(k=>k.replace(arrayIndicator,'[]')===fieldName).length}]`)
-        }
-        a[fieldName] = ['true', 'false'].includes(v) ? (v==='true') : v;
-      }
-      return a;
-    }, {});  
-    /* Default values */
-    let occurances = {};
-    this.selectedProfile.fields.filter(f=>f.default).forEach(f=>{
-      occurances[f.fieldName] = (occurances[f.fieldName] == undefined ? -1 : occurances[f.fieldName]) + 1;
-      let name = f.fieldName.replace(/\[\]/g,`[${occurances[f.fieldName]}]`);
-      if (!obj[name]) obj[name] = f.default;
-    })
-    obj = dot.object(obj);
-    /* Preferred address, email, phone */
-    if (obj['contact_info']) {
-      if (Array.isArray(obj['contact_info']['address']) && obj['contact_info']['address'].length > 0)
-        obj['contact_info']['address'][0]['preferred'] = true;
-      if (Array.isArray(obj['contact_info']['email']) && obj['contact_info']['email'].length > 0)
-        obj['contact_info']['email'][0]['preferred'] = true;
-      if (Array.isArray(obj['contact_info']['phone']) && obj['contact_info']['phone'].length > 0)
-        obj['contact_info']['phone'][0]['preferred'] = true;
-    }
-    /* Account Type */
-    obj['account_type'] = { value: this.selectedProfile.accountType };
-
-    return obj;
   }
 }
 
@@ -224,11 +161,3 @@ export class MainGuard implements CanActivate {
 }
 
 const isRestErrorResponse = (object: any): object is RestErrorResponse => 'error' in object;
-
-@Component({
-  selector: 'main-dialog',
-  templateUrl: 'main-dialog.html',
-})
-export class MainDialog {
-  constructor(@Inject(MAT_DIALOG_DATA) public data: { count: number, type: string }) {}
-}
