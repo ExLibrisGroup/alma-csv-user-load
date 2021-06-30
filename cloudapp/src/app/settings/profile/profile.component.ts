@@ -11,7 +11,7 @@ import { MatTableDataSource, MatTable } from '@angular/material/table';
 export class ProfileComponent implements OnInit {
   displayedColumns = ['header', 'default', 'name', 'actions'];
   dataSource: MatTableDataSource<any>;
-  @ViewChild('table', null) table: MatTable<any>;
+  @ViewChild('table') table: MatTable<any>;
   @Input() form: FormGroup;
   
   constructor(private fb: FormBuilder) { }
