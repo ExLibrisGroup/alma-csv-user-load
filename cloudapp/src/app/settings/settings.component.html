@@ -34,7 +34,7 @@
   <div class="profile-list">
     <mat-form-field>
       <mat-label translate>Settings.SelectProfile</mat-label>
-      <mat-select placeholder="Profile" [(value)]="selectedProfile" [compareWith]="compareProfiles" (selectionChange)="onSelectProfile($event)">
+      <mat-select placeholder="Profile" [(value)]="selectedProfile" [compareWith]="compareProfiles">
         <mat-select-trigger>{{selectedProfile?.value.name}}</mat-select-trigger>
         <mat-option *ngFor="let profile of profiles.controls" [value]="profile">
           {{profile.value.name}}

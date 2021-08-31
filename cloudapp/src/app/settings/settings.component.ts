@@ -10,7 +10,6 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { DialogService } from 'eca-components';
 import { Profile, validateProfiles } from '../models/settings';
 import { DialogData } from 'eca-components/dialogs/dialog'; 
-import { MatSelectChange } from '@angular/material/select';
 
 @Component({
   selector: 'app-settings',
@@ -21,7 +20,14 @@ export class SettingsComponent implements OnInit {
   form: FormGroup;
   saving = false;
   submitted = false;
-  selectedProfile: FormGroup;
+  private _selectedProfile: FormGroup;
+  get selectedProfile() {
+    return this._selectedProfile;
+  }
+  set selectedProfile(profile: FormGroup) {
+    this.storeService.set('profile', profile.get('name').value).subscribe();
+    this._selectedProfile = profile;
+  }
 
   constructor(
     private fb: FormBuilder, 
@@ -92,10 +98,6 @@ export class SettingsComponent implements OnInit {
 
   reset() {
     this.load();
-  }
-
-  onSelectProfile(event: MatSelectChange) {
-    this.storeService.set('profile', event.value.get('name').value).subscribe();
   }
 
   setProfile(index = 0) {
