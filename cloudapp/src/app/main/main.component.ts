@@ -9,6 +9,7 @@ import { map, mergeMap, tap } from 'rxjs/operators';
 import { DialogService } from 'eca-components';
 import { UserService } from './user.service';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatSelectChange } from '@angular/material/select';
 
 const MAX_PARALLEL_CALLS = 5;
 
@@ -44,6 +45,17 @@ export class MainComponent implements OnInit {
       this.selectedProfile = this.settings.profiles[0];
     });
     this.storeService.get('showLog').subscribe(val => this.showLog = val);
+    this.storeService.get('profile').subscribe(val => {
+      if (!!val) {
+        this.settings.profiles.forEach(p => {
+          if (p.name == val) this.selectedProfile = p;
+        })
+      }
+    })
+  }
+
+  onSelectProfile(event: MatSelectChange) {
+    this.storeService.set('profile', event.value.name).subscribe();
   }
 
   onSelect(event) {

@@ -4,12 +4,13 @@ import { FormBuilder, FormArray, FormGroup, AbstractControl, FormControl } from 
 import { isEmptyObject, tryParse, download } from '../utilities';
 import { validateFields, validateForm } from '../models/settings-utils';
 import { Observable, of } from 'rxjs';
-import { CloudAppSettingsService, AlertService, FormGroupUtil } from '@exlibris/exl-cloudapp-angular-lib';
+import { CloudAppSettingsService, AlertService, FormGroupUtil, CloudAppStoreService } from '@exlibris/exl-cloudapp-angular-lib';
 import { TranslateService } from '@ngx-translate/core';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { DialogService } from 'eca-components';
 import { Profile, validateProfiles } from '../models/settings';
 import { DialogData } from 'eca-components/dialogs/dialog'; 
+import { MatSelectChange } from '@angular/material/select';
 
 @Component({
   selector: 'app-settings',
@@ -28,6 +29,7 @@ export class SettingsComponent implements OnInit {
     private translate: TranslateService,
     private alert: AlertService,
     private dialog: DialogService,
+    private storeService: CloudAppStoreService,
   ) { }
 
   ngOnInit() {
@@ -60,7 +62,15 @@ export class SettingsComponent implements OnInit {
         })
         this.form = settings;
       }
-      this.setProfile();
+      this.storeService.get('profile').subscribe(val => {
+        let index = 0;
+        if (!!val) {
+          this.profiles.controls.forEach((p, i) => {
+            if (p.get('name').value == val) index = i;
+          })
+        }
+        this.setProfile(index);
+      });
       this.profiles.controls.forEach( f => f.get('fields').setValidators(validateFields));
       this.form.setValidators(validateForm);
       this.form.updateValueAndValidity();
@@ -82,6 +92,10 @@ export class SettingsComponent implements OnInit {
 
   reset() {
     this.load();
+  }
+
+  onSelectProfile(event: MatSelectChange) {
+    this.storeService.set('profile', event.value.get('name').value).subscribe();
   }
 
   setProfile(index = 0) {
