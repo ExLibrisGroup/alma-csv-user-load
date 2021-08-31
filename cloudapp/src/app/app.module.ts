@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
-import { MaterialModule, getTranslateModule, LazyTranslateLoader, AlertModule } from '@exlibris/exl-cloudapp-angular-lib';
+import { MaterialModule, LazyTranslateLoader, AlertModule } from '@exlibris/exl-cloudapp-angular-lib';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxDropzoneModule } from 'ngx-dropzone';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -43,7 +43,6 @@ import { DialogModule } from 'eca-components';
       HttpClientModule,
       ReactiveFormsModule,
       FormsModule,
-      getTranslateModule(),
       AlertModule,
       DialogModule,
       BrowserAnimationsModule,
