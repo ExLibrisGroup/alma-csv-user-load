@@ -8,8 +8,8 @@ import { Observable, from } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { DialogService } from 'eca-components';
 import { UserService } from './user.service';
-import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatSelectChange } from '@angular/material/select';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 
 const MAX_PARALLEL_CALLS = 5;
 
@@ -96,7 +96,7 @@ export class MainComponent implements OnInit {
     } catch(err) { }                 
   }  
 
-  showLogChanged(event: MatCheckboxChange) {
+  showLogChanged(event: MatSlideToggleChange) {
     this.storeService.set('showLog', event.checked).subscribe();
   }
 

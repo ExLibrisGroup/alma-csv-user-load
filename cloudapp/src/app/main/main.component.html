@@ -27,7 +27,8 @@
 <div *ngIf="results">
   <h2 translation="Results">Results</h2>
   <p>{{resultsSummary}}</p>
-  <mat-checkbox labelPosition="before" (change)="showLogChanged($event)" [(ngModel)]="showLog">{{'Main.ShowLog' | translate}}</mat-checkbox>
+  <mat-slide-toggle labelPosition="before" (change)="showLogChanged($event)" [(ngModel)]="showLog">{{'Main.ShowLog' | translate}}</mat-slide-toggle>
+
   <pre #resultsPanel *ngIf="showLog">{{results}}</pre>
   <button mat-stroked-button type="button" (click)="reset()" *ngIf="!running">OK</button> 
 </div>
