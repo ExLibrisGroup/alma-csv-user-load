@@ -55,7 +55,7 @@ export class UserService {
           method: HttpMethod.DELETE
         }).pipe(
           map(()=>({primary_id: user.primary_id})),
-          catchError(e=>of(e))
+          catchError(e=>of(this.handleError(e, user)))
         );
     }
 
