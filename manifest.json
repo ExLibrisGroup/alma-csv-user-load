@@ -44,5 +44,9 @@
          "modals": true,
          "downloads": true
       }
+   },
+   "fullscreen": {
+      "allow": true,
+      "open": false
    }
 }
