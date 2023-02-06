@@ -23,6 +23,7 @@ export class UserService {
           requestBody: user
         }).pipe(catchError(e=>of(this.handleError(e, user))));
       case 'UPDATE':
+      case 'ENRICH':
         return this.restService.call(`/users/${user.primary_id}`).pipe(
           catchError(e=>{
             if (e.error && e.error.errorList && e.error.errorList.error[0].errorCode == '401861') {
@@ -40,6 +41,39 @@ export class UserService {
               });
             } else {
               delete original['user_role']; // Don't update roles
+              if (profileType == 'ENRICH') {
+                this.enrichRepeatableElement (original.user_identifier, user.user_identifier);
+                this.enrichRepeatableElement (original.user_note, user.user_note);
+                this.enrichRepeatableElement (original.proxy_for_user, user.proxy_for_user);
+                this.enrichRepeatableElement (original.user_statistic, user.user_statistic);
+                if (user.contact_info) {
+                  this.enrichRepeatableElement (original.contact_info.address, user.contact_info.address);
+                  this.enrichRepeatableElement (original.contact_info.phone, user.contact_info.phone);
+                  this.enrichRepeatableElement (original.contact_info.email, user.contact_info.email);
+                }
+                if (!user.contact_info && (original.contact_info.address || original.contact_info.phone || original.contact_info.email)) {
+                  //No user.contact_info supplied; create empty to load with existing entries
+                  user.contact_info = {};
+                }
+                if (!user.contact_info.address && original.contact_info.address) {
+                  user.contact_info.address = [];
+                  for (let i = 0; i < original.contact_info.address.length; i++) {
+                    user.contact_info.address.push (original.contact_info.address[i]);        
+                  }
+                }
+                if (!user.contact_info.phone && original.contact_info.phone) {
+                  user.contact_info.phone = [];
+                  for (let i = 0; i < original.contact_info.phone.length; i++) {
+                    user.contact_info.phone.push (original.contact_info.phone[i]);
+                  }
+                }
+                if (!user.contact_info.email && original.contact_info.email) {
+                  user.contact_info.email = [];
+                  for (let i = 0; i < original.contact_info.email.length; i++) {
+                    user.contact_info.email.push (original.contact_info.email[i]);
+                  }
+                }
+              }
               return this.restService.call({
                 url: `/users/${user.primary_id}`,
                 method: HttpMethod.PUT,
@@ -104,5 +138,16 @@ export class UserService {
     obj['account_type'] = { value: selectedProfile.accountType };
 
     return obj;
+  }
+
+  private enrichRepeatableElement (originalElements, newElements) {
+    // This function will copy any of the originalElements into the newElements, thereby
+    // adding repeatable elements. Thus, when the PUT happens, the "swap all" will include both 
+    // old and new repeatables.
+    if (originalElements && newElements) {
+      for (let i = 0; i < originalElements.length; i++) {
+        newElements.splice(newElements.length, 0, originalElements[i]);        
+      }
+    }
   }
 }

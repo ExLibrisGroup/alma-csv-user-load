@@ -24,7 +24,8 @@
 		"Name": "Name",
 		"ProfileType": "Profile Type",
 		"Update": "Add/Update",
-		"UserType": "User Type"
+		"UserType": "User Type",
+		"Enrich":"Enrich"
 	},
 	"Reset": "Reset",
 	"Save": "Save",

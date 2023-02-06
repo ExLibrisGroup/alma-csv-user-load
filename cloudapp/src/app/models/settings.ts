@@ -12,7 +12,8 @@ export interface Profile {
 export enum ProfileType {
   ADD = "ADD",
   UPDATE = "UPDATE",
-  DELETE = "DELETE"
+  DELETE = "DELETE",
+  ENRICH = "ENRICH",
 }
 
 export interface Field {
